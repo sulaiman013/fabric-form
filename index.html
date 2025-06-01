@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Provisioner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066cc;
+            --primary-hover: #0052a3;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --border: #dee2e6;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 0.25rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: var(--light);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-control.small {
+            width: 100px;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .item-card {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .item-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .nested-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .columns-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .column-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .column-item input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .column-item input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .json-preview {
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+            background: var(--info);
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--secondary);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 4px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.875rem;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .columns-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏗️ Fabric Provisioner</h1>
+            <p>Create and configure your Microsoft Fabric Lakehouses and Warehouses</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('form')">Form Builder</button>
+            <button class="tab" onclick="switchTab('json')">Import JSON</button>
+            <button class="tab" onclick="switchTab('preview')">Preview & Submit</button>
+        </div>
+
+        <!-- Form Builder Tab -->
+        <div id="form-tab" class="content-section active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📊 Lakehouses</h2>
+                    <button class="btn btn-primary btn-sm" onclick="addLakehouse()">
+                        <span class="icon">➕</span> Add Lakehouse
+                    </button>
+                </div>
+                <div id="lakehouses-container">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                        <p>No lakehouses configured yet. Click "Add Lakehouse" to get started.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🏢 Warehouses</h2>
+                    <button class="btn btn-primary btn-sm" onclick="addWarehouse()">
+                        <span class="icon">➕</span> Add Warehouse
+                    </button>
+                </div>
+                <div id="warehouses-container">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                        <p>No warehouses configured yet. Click "Add Warehouse" to get started.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import JSON Tab -->
+        <div id="json-tab" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📁 Import Configuration</h2>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Upload JSON File</label>
+                    <div class="file-upload">
+                        <input type="file" id="json-file" accept=".json" onchange="handleFileUpload(event)">
+                        <button class="btn btn-secondary">
+                            <span class="icon">📤</span> Choose File
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Or paste JSON directly:</label>
+                    <textarea class="form-control" rows="10" id="json-input" placeholder='{"Lakehouses": [], "Warehouses": []}'></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="importJSON()">
+                    <span class="icon">📥</span> Import Configuration
+                </button>
+            </div>
+        </div>
+
+        <!-- Preview Tab -->
+        <div id="preview-tab" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📋 Configuration Preview</h2>
+                </div>
+                <div class="json-preview" id="json-preview">
+                    Your configuration will appear here...
+                </div>
+                <div class="actions">
+                    <button class="btn btn-success" onclick="submitForm()">
+                        <span class="icon">🚀</span> Submit & Provision
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadJSON()">
+                        <span class="icon">💾</span> Download JSON
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lakehouseCount = 0;
+        let warehouseCount = 0;
+        let configuration = {
+            Lakehouses: [],
+            Warehouses: []
+        };
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            
+            if (tab === 'form') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('form-tab').classList.add('active');
+            } else if (tab === 'json') {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('json-tab').classList.add('active');
+            } else if (tab === 'preview') {
+                document.querySelector('.tab:nth-child(3)').classList.add('active');
+                document.getElementById('preview-tab').classList.add('active');
+                updatePreview();
+            }
+        }
+
+        function addLakehouse() {
+            lakehouseCount++;
+            const container = document.getElementById('lakehouses-container');
+            
+            if (container.querySelector('.empty-state')) {
+                container.innerHTML = '';
+            }
+            
+            const lakehouseCard = document.createElement('div');
+            lakehouseCard.className = 'item-card';
+            lakehouseCard.id = `lakehouse-${lakehouseCount}`;
+            lakehouseCard.innerHTML = `
+                <div class="item-header">
+                    <h3 class="item-title">Lakehouse ${lakehouseCount}</h3>
+                    <button class="btn btn-danger btn-sm" onclick="removeLakehouse(${lakehouseCount})">
+                        <span class="icon">🗑️</span> Remove
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" id="lakehouse-name-${lakehouseCount}" placeholder="e.g., SalesLH" required>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="checkbox" id="lakehouse-schemas-${lakehouseCount}">
+                        <label for="lakehouse-schemas-${lakehouseCount}">Enable Schemas</label>
+                    </div>
+                </div>
+                <div class="schemas-section" id="lakehouse-schemas-container-${lakehouseCount}">
+                    <div class="item-header">
+                        <h4>Schemas</h4>
+                        <button class="btn btn-primary btn-sm" onclick="addSchema('lakehouse', ${lakehouseCount})">
+                            <span class="icon">➕</span> Add Schema
+                        </button>
+                    </div>
+                    <div id="lakehouse-${lakehouseCount}-schemas"></div>
+                </div>
+            `;
+            
+            container.appendChild(lakehouseCard);
+        }
+
+        function addWarehouse() {
+            warehouseCount++;
+            const container = document.getElementById('warehouses-container');
+            
+            if (container.querySelector('.empty-state')) {
+                container.innerHTML = '';
+            }
+            
+            const warehouseCard = document.createElement('div');
+            warehouseCard.className = 'item-card';
+            warehouseCard.id = `warehouse-${warehouseCount}`;
+            warehouseCard.innerHTML = `
+                <div class="item-header">
+                    <h3 class="item-title">Warehouse ${warehouseCount}</h3>
+                    <button class="btn btn-danger btn-sm" onclick="removeWarehouse(${warehouseCount})">
+                        <span class="icon">🗑️</span> Remove
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" id="warehouse-name-${warehouseCount}" placeholder="e.g., FinanceWH" required>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="checkbox" id="warehouse-case-${warehouseCount}">
+                        <label for="warehouse-case-${warehouseCount}">Case-Insensitive</label>
+                    </div>
+                </div>
+                <div class="schemas-section">
+                    <div class="item-header">
+                        <h4>Schemas</h4>
+                        <button class="btn btn-primary btn-sm" onclick="addSchema('warehouse', ${warehouseCount})">
+                            <span class="icon">➕</span> Add Schema
+                        </button>
+                    </div>
+                    <div id="warehouse-${warehouseCount}-schemas"></div>
+                </div>
+            `;
+            
+            container.appendChild(warehouseCard);
+        }
+
+        function addSchema(type, parentId) {
+            const schemaId = Date.now();
+            const container = document.getElementById(`${type}-${parentId}-schemas`);
+            
+            const schemaCard = document.createElement('div');
+            schemaCard.className = 'nested-item';
+            schemaCard.id = `schema-${schemaId}`;
+            schemaCard.innerHTML = `
+                <div class="item-header">
+                    <h5>Schema</h5>
+                    <button class="btn btn-danger btn-sm" onclick="removeSchema('${schemaId}')">
+                        <span class="icon">✖</span>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Schema Name</label>
+                    <input type="text" class="form-control" id="schema-name-${schemaId}" placeholder="e.g., sales, dbo" required>
+                </div>
+                <div class="tables-section">
+                    <div class="item-header">
+                        <h6>Tables</h6>
+                        <button class="btn btn-primary btn-sm" onclick="addTable('${schemaId}')">
+                            <span class="icon">➕</span> Add Table
+                        </button>
+                    </div>
+                    <div id="schema-${schemaId}-tables"></div>
+                </div>
+            `;
+            
+            container.appendChild(schemaCard);
+        }
+
+        function addTable(schemaId) {
+            const tableId = Date.now();
+            const container = document.getElementById(`schema-${schemaId}-tables`);
+            
+            const tableCard = document.createElement('div');
+            tableCard.className = 'nested-item';
+            tableCard.id = `table-${tableId}`;
+            tableCard.innerHTML = `
+                <div class="item-header">
+                    <h6>Table</h6>
+                    <button class="btn btn-danger btn-sm" onclick="removeTable('${tableId}')">
+                        <span class="icon">✖</span>
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Table Name</label>
+                    <input type="text" class="form-control" id="table-name-${tableId}" placeholder="e.g., Orders, Transactions" required>
+                </div>
+                <div class="columns-section">
+                    <div class="item-header">
+                        <h6>Columns</h6>
+                        <button class="btn btn-primary btn-sm" onclick="addColumn('${tableId}')">
+                            <span class="icon">➕</span> Add Column
+                        </button>
+                    </div>
+                    <div class="columns-grid" id="table-${tableId}-columns"></div>
+                </div>
+            `;
+            
+            container.appendChild(tableCard);
+        }
+
+        function addColumn(tableId) {
+            const columnId = Date.now();
+            const container = document.getElementById(`table-${tableId}-columns`);
+            
+            const columnDiv = document.createElement('div');
+            columnDiv.className = 'column-item';
+            columnDiv.id = `column-${columnId}`;
+            columnDiv.innerHTML = `
+                <input type="text" placeholder="Column name" id="col-name-${columnId}">
+                <input type="text" placeholder="Type" id="col-type-${columnId}">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="col-pk-${columnId}">
+                    <span>PK</span>
+                </label>
+                <button class="btn btn-danger btn-sm" onclick="removeColumn('${columnId}')">✖</button>
+            `;
+            
+            container.appendChild(columnDiv);
+        }
+
+        function removeLakehouse(id) {
+            document.getElementById(`lakehouse-${id}`).remove();
+            checkEmptyState('lakehouses-container');
+        }
+
+        function removeWarehouse(id) {
+            document.getElementById(`warehouse-${id}`).remove();
+            checkEmptyState('warehouses-container');
+        }
+
+        function removeSchema(id) {
+            document.getElementById(`schema-${id}`).remove();
+        }
+
+        function removeTable(id) {
+            document.getElementById(`table-${id}`).remove();
+        }
+
+        function removeColumn(id) {
+            document.getElementById(`column-${id}`).remove();
+        }
+
+        function checkEmptyState(containerId) {
+            const container = document.getElementById(containerId);
+            if (container.children.length === 0) {
+                const type = containerId.includes('lakehouse') ? 'lakehouses' : 'warehouses';
+                const title = containerId.includes('lakehouse') ? 'Lakehouse' : 'Warehouse';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                        <p>No ${type} configured yet. Click "Add ${title}" to get started.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function collectFormData() {
+            const lakehouses = [];
+            const warehouses = [];
+            
+            // Collect Lakehouses
+            document.querySelectorAll('[id^="lakehouse-"]:not([id*="name"]):not([id*="schemas"])').forEach(lh => {
+                const id = lh.id.split('-')[1];
+                const lakehouse = {
+                    name: document.getElementById(`lakehouse-name-${id}`)?.value || '',
+                    enableSchemas: document.getElementById(`lakehouse-schemas-${id}`)?.checked || false,
+                    schemas: []
+                };
+                
+                // Collect schemas for this lakehouse
+                lh.querySelectorAll('[id^="schema-"]').forEach(schema => {
+                    const schemaId = schema.id.split('-')[1];
+                    const schemaObj = {
+                        name: document.getElementById(`schema-name-${schemaId}`)?.value || '',
+                        tables: []
+                    };
+                    
+                    // Collect tables for this schema
+                    schema.querySelectorAll('[id^="table-"]').forEach(table => {
+                        const tableId = table.id.split('-')[1];
+                        const tableObj = {
+                            name: document.getElementById(`table-name-${tableId}`)?.value || '',
+                            columns: []
+                        };
+                        
+                        // Collect columns for this table
+                        table.querySelectorAll('[id^="column-"]').forEach(column => {
+                            const columnId = column.id.split('-')[1];
+                            const columnObj = {
+                                name: document.getElementById(`col-name-${columnId}`)?.value || '',
+                                type: document.getElementById(`col-type-${columnId}`)?.value || '',
+                                primaryKey: document.getElementById(`col-pk-${columnId}`)?.checked || false
+                            };
+                            if (columnObj.name) {
+                                tableObj.columns.push(columnObj);
+                            }
+                        });
+                        
+                        if (tableObj.name) {
+                            schemaObj.tables.push(tableObj);
+                        }
+                    });
+                    
+                    if (schemaObj.name) {
+                        lakehouse.schemas.push(schemaObj);
+                    }
+                });
+                
+                if (lakehouse.name) {
+                    lakehouses.push(lakehouse);
+                }
+            });
+            
+            // Collect Warehouses
+            document.querySelectorAll('[id^="warehouse-"]:not([id*="name"]):not([id*="case"])').forEach(wh => {
+                const id = wh.id.split('-')[1];
+                const warehouse = {
+                    name: document.getElementById(`warehouse-name-${id}`)?.value || '',
+                    caseInsensitive: document.getElementById(`warehouse-case-${id}`)?.checked || false,
+                    schemas: []
+                };
+                
+                // Collect schemas for this warehouse
+                wh.querySelectorAll('[id^="schema-"]').forEach(schema => {
+                    const schemaId = schema.id.split('-')[1];
+                    const schemaObj = {
+                        name: document.getElementById(`schema-name-${schemaId}`)?.value || '',
+                        tables: []
+                    };
+                    
+                    // Collect tables for this schema
+                    schema.querySelectorAll('[id^="table-"]').forEach(table => {
+                        const tableId = table.id.split('-')[1];
+                        const tableObj = {
+                            name: document.getElementById(`table-name-${tableId}`)?.value || '',
+                            columns: []
+                        };
+                        
+                        // Collect columns for this table
+                        table.querySelectorAll('[id^="column-"]').forEach(column => {
+                            const columnId = column.id.split('-')[1];
+                            const columnObj = {
+                                name: document.getElementById(`col-name-${columnId}`)?.value || '',
+                                type: document.getElementById(`col-type-${columnId}`)?.value || '',
+                                primaryKey: document.getElementById(`col-pk-${columnId}`)?.checked || false
+                            };
+                            if (columnObj.name) {
+                                tableObj.columns.push(columnObj);
+                            }
+                        });
+                        
+                        if (tableObj.name) {
+                            schemaObj.tables.push(tableObj);
+                        }
+                    });
+                    
+                    if (schemaObj.name) {
+                        warehouse.schemas.push(schemaObj);
+                    }
+                });
+                
+                if (warehouse.name) {
+                    warehouses.push(warehouse);
+                }
+            });
+            
+            configuration = {
+                Lakehouses: lakehouses,
+                Warehouses: warehouses
+            };
+            
+            return configuration;
+        }
+
+        function updatePreview() {
+            const data = collectFormData();
+            document.getElementById('json-preview').textContent = JSON.stringify(data, null, 2);
+        }
+
+        function downloadJSON() {
+            const data = collectFormData();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fabric-configuration.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function submitForm() {
+            const data = collectFormData();
+            
+            if (data.Lakehouses.length === 0 && data.Warehouses.length === 0) {
+                alert('Please add at least one Lakehouse or Warehouse before submitting.');
+                return;
+            }
+            
+            // n8n webhook URL
+            const webhookUrl = 'https://sulaimandc.app.n8n.cloud/webhook-test/fabric-provisioner';
+            
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert('Configuration submitted successfully!');
+                console.log('Success:', result);
+            })
+            .catch(error => {
+                alert('Error submitting configuration. Please check the console for details.');
+                console.error('Error:', error);
+            });
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('json-input').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function importJSON() {
+            const jsonText = document.getElementById('json-input').value;
+            
+            try {
+                const data = JSON.parse(jsonText);
+                
+                // Clear existing form
+                document.getElementById('lakehouses-container').innerHTML = '';
+                document.getElementById('warehouses-container').innerHTML = '';
+                lakehouseCount = 0;
+                warehouseCount = 0;
+                
+                // Import Lakehouses
+                if (data.Lakehouses && Array.isArray(data.Lakehouses)) {
+                    data.Lakehouses.forEach(lakehouse => {
+                        addLakehouse();
+                        const lhId = lakehouseCount;
+                        
+                        document.getElementById(`lakehouse-name-${lhId}`).value = lakehouse.name || '';
+                        document.getElementById(`lakehouse-schemas-${lhId}`).checked = lakehouse.enableSchemas || false;
+                        
+                        if (lakehouse.schemas && Array.isArray(lakehouse.schemas)) {
+                            lakehouse.schemas.forEach(schema => {
+                                addSchema('lakehouse', lhId);
+                                const schemaEl = document.querySelector(`#lakehouse-${lhId}-schemas > div:last-child`);
+                                const schemaId = schemaEl.id.split('-')[1];
+                                
+                                document.getElementById(`schema-name-${schemaId}`).value = schema.name || '';
+                                
+                                if (schema.tables && Array.isArray(schema.tables)) {
+                                    schema.tables.forEach(table => {
+                                        addTable(schemaId);
+                                        const tableEl = document.querySelector(`#schema-${schemaId}-tables > div:last-child`);
+                                        const tableId = tableEl.id.split('-')[1];
+                                        
+                                        document.getElementById(`table-name-${tableId}`).value = table.name || '';
+                                        
+                                        if (table.columns && Array.isArray(table.columns)) {
+                                            table.columns.forEach(column => {
+                                                addColumn(tableId);
+                                                const columnEl = document.querySelector(`#table-${tableId}-columns > div:last-child`);
+                                                const columnId = columnEl.id.split('-')[1];
+                                                
+                                                document.getElementById(`col-name-${columnId}`).value = column.name || '';
+                                                document.getElementById(`col-type-${columnId}`).value = column.type || '';
+                                                document.getElementById(`col-pk-${columnId}`).checked = column.primaryKey || false;
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                // Import Warehouses
+                if (data.Warehouses && Array.isArray(data.Warehouses)) {
+                    data.Warehouses.forEach(warehouse => {
+                        addWarehouse();
+                        const whId = warehouseCount;
+                        
+                        document.getElementById(`warehouse-name-${whId}`).value = warehouse.name || '';
+                        document.getElementById(`warehouse-case-${whId}`).checked = warehouse.caseInsensitive || false;
+                        
+                        if (warehouse.schemas && Array.isArray(warehouse.schemas)) {
+                            warehouse.schemas.forEach(schema => {
+                                addSchema('warehouse', whId);
+                                const schemaEl = document.querySelector(`#warehouse-${whId}-schemas > div:last-child`);
+                                const schemaId = schemaEl.id.split('-')[1];
+                                
+                                document.getElementById(`schema-name-${schemaId}`).value = schema.name || '';
+                                
+                                if (schema.tables && Array.isArray(schema.tables)) {
+                                    schema.tables.forEach(table => {
+                                        addTable(schemaId);
+                                        const tableEl = document.querySelector(`#schema-${schemaId}-tables > div:last-child`);
+                                        const tableId = tableEl.id.split('-')[1];
+                                        
+                                        document.getElementById(`table-name-${tableId}`).value = table.name || '';
+                                        
+                                        if (table.columns && Array.isArray(table.columns)) {
+                                            table.columns.forEach(column => {
+                                                addColumn(tableId);
+                                                const columnEl = document.querySelector(`#table-${tableId}-columns > div:last-child`);
+                                                const columnId = columnEl.id.split('-')[1];
+                                                
+                                                document.getElementById(`col-name-${columnId}`).value = column.name || '';
+                                                document.getElementById(`col-type-${columnId}`).value = column.type || '';
+                                                document.getElementById(`col-pk-${columnId}`).checked = column.primaryKey || false;
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                alert('JSON imported successfully!');
+                switchTab('form');
+                
+            } catch (error) {
+                alert('Invalid JSON format. Please check your input.');
+                console.error('JSON Parse Error:', error);
+            }
+        }
+
+        // Initialize with empty state
+        checkEmptyState('lakehouses-container');
+        checkEmptyState('warehouses-container');
+    </script>
+</body>
+</html>
