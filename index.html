@@ -10,59 +10,97 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         :root {
-            --primary: #0066cc;
-            --primary-hover: #0052a3;
-            --secondary: #6c757d;
-            --success: #28a745;
-            --danger: #dc3545;
+            --primary: #00ff7f;
+            --primary-hover: #00e66b;
+            --secondary: #4a5568;
+            --success: #00ff7f;
+            --danger: #ff4757;
             --warning: #ffc107;
             --info: #17a2b8;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --border: #dee2e6;
-            --shadow: rgba(0, 0, 0, 0.1);
+            --light: rgba(255, 255, 255, 0.1);
+            --dark: #1a202c;
+            --border: rgba(255, 255, 255, 0.2);
+            --shadow: rgba(0, 0, 0, 0.3);
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
+            background: linear-gradient(135deg, #00ff7f 0%, #00cc66 25%, #339966 50%, #2d3748 75%, #1a202c 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #fff;
             line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
-
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 127, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 127, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(0, 204, 102, 0.1) 0%, transparent 50%);
+            background-size: 100% 100%, 80% 80%, 120% 120%;
+            animation: waveTexture 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes waveTexture {
+            0%, 100% { 
+                transform: translateX(0) translateY(0) scale(1);
+                opacity: 0.5;
+            }
+            50% { 
+                transform: translateX(-10px) translateY(-20px) scale(1.02);
+                opacity: 0.8;
+            }
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+            position: relative;
+            z-index: 1;
         }
-
         .header {
             text-align: center;
             margin-bottom: 3rem;
         }
-
         .header h1 {
             font-size: 2.5rem;
-            color: var(--dark);
+            color: #fff;
             margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-
         .header p {
-            color: var(--secondary);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
-
         .tabs {
             display: flex;
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 0.25rem;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 8px var(--shadow);
+            box-shadow: 0 8px 32px var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
         .tab {
             flex: 1;
             padding: 1rem;
@@ -70,98 +108,83 @@
             border: none;
             font-size: 1rem;
             font-weight: 500;
-            color: var(--secondary);
+            color: rgba(255, 255, 255, 0.8);
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-
         .tab.active {
-            background: var(--primary);
-            color: white;
+            background: linear-gradient(135deg, var(--primary), #00cc66);
+            color: #1a202c;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 255, 127, 0.3);
         }
-
         .tab:hover:not(.active) {
-            background: var(--light);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
         }
-
         .content-section {
             display: none;
             animation: fadeIn 0.3s ease;
         }
-
         .content-section.active {
             display: block;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         .card {
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
             border-radius: 12px;
             padding: 2rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px var(--shadow);
+            box-shadow: 0 8px 32px var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
-
         .card-title {
             font-size: 1.5rem;
             font-weight: 600;
-            color: var(--dark);
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
-
         .form-group {
             margin-bottom: 1.5rem;
         }
-
         .form-label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: var(--dark);
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
-
         .form-control {
             width: 100%;
             padding: 0.75rem;
             font-size: 1rem;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: #fff;
         }
-
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 255, 127, 0.2);
+            background: rgba(255, 255, 255, 0.15);
         }
-
-        .form-control.small {
-            width: 100px;
-        }
-
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
         .btn {
             padding: 0.75rem 1.5rem;
             font-size: 1rem;
@@ -173,121 +196,80 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            text-decoration: none;
         }
-
         .btn-primary {
-            background: var(--primary);
-            color: white;
+            background: linear-gradient(135deg, var(--primary), #00cc66);
+            color: #1a202c;
+            font-weight: 600;
         }
-
         .btn-primary:hover {
-            background: var(--primary-hover);
+            background: linear-gradient(135deg, var(--primary-hover), #00b359);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+            box-shadow: 0 6px 20px rgba(0, 255, 127, 0.4);
         }
-
         .btn-secondary {
-            background: white;
-            color: var(--secondary);
-            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
         }
-
         .btn-secondary:hover {
-            background: var(--light);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
         }
-
         .btn-success {
-            background: var(--success);
-            color: white;
+            background: linear-gradient(135deg, var(--success), #00cc66);
+            color: #1a202c;
+            font-weight: 600;
         }
-
         .btn-success:hover {
-            background: #218838;
+            background: linear-gradient(135deg, #00e66b, #00b359);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 127, 0.4);
         }
-
         .btn-danger {
-            background: var(--danger);
-            color: white;
+            background: linear-gradient(135deg, var(--danger), #e74c3c);
+            color: #fff;
         }
-
         .btn-danger:hover {
-            background: #c82333;
+            background: linear-gradient(135deg, #ff3742, #c0392b);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
         }
-
         .btn-sm {
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
         }
-
         .item-card {
-            background: var(--light);
-            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1rem;
             position: relative;
+            backdrop-filter: blur(10px);
         }
-
         .item-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
-
         .item-title {
             font-size: 1.125rem;
             font-weight: 600;
-            color: var(--dark);
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
-
-        .nested-item {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .columns-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .column-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-        }
-
-        .column-item input {
-            flex: 1;
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.875rem;
-        }
-
-        .column-item input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
         .actions {
             display: flex;
             gap: 1rem;
             margin-top: 2rem;
         }
-
         .json-preview {
-            background: #f8f9fa;
-            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 6px;
             padding: 1rem;
             font-family: 'Courier New', monospace;
@@ -296,13 +278,13 @@
             overflow-y: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
+            color: #fff;
+            backdrop-filter: blur(10px);
         }
-
         .file-upload {
             position: relative;
             display: inline-block;
         }
-
         .file-upload input[type="file"] {
             position: absolute;
             opacity: 0;
@@ -310,76 +292,34 @@
             height: 100%;
             cursor: pointer;
         }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
-            background: var(--info);
-            border-radius: 4px;
-        }
-
         .empty-state {
             text-align: center;
             padding: 3rem;
-            color: var(--secondary);
+            color: rgba(255, 255, 255, 0.7);
         }
-
         .empty-state svg {
             width: 64px;
             height: 64px;
             margin-bottom: 1rem;
-            opacity: 0.3;
+            opacity: 0.5;
         }
-
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip-text {
-            visibility: hidden;
-            width: 200px;
-            background-color: var(--dark);
-            color: white;
-            text-align: center;
-            padding: 0.5rem;
-            border-radius: 4px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.875rem;
-        }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-
         .icon {
             width: 20px;
             height: 20px;
             display: inline-block;
             vertical-align: middle;
         }
-
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
             }
             
-            .columns-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .actions {
                 flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
             }
         }
     </style>
@@ -388,17 +328,29 @@
     <div class="container">
         <div class="header">
             <h1>🏗️ Fabric Provisioner</h1>
-            <p>Create and configure your Microsoft Fabric Lakehouses and Warehouses</p>
+            <p>Create and configure your Microsoft Fabric Workspaces, Lakehouses and Warehouses</p>
         </div>
-
+        
         <div class="tabs">
             <button class="tab active" onclick="switchTab('form')">Form Builder</button>
             <button class="tab" onclick="switchTab('json')">Import JSON</button>
             <button class="tab" onclick="switchTab('preview')">Preview & Submit</button>
         </div>
-
+        
         <!-- Form Builder Tab -->
         <div id="form-tab" class="content-section active">
+            <!-- Workspace Configuration -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🏢 Workspace Configuration</h2>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Workspace Name</label>
+                    <input type="text" class="form-control" id="workspace-name" placeholder="e.g., DataAnalytics, SalesReporting" required>
+                </div>
+            </div>
+            
+            <!-- Lakehouses -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">📊 Lakehouses</h2>
@@ -415,7 +367,8 @@
                     </div>
                 </div>
             </div>
-
+            
+            <!-- Warehouses -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">🏢 Warehouses</h2>
@@ -433,7 +386,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Import JSON Tab -->
         <div id="json-tab" class="content-section">
             <div class="card">
@@ -451,14 +404,14 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Or paste JSON directly:</label>
-                    <textarea class="form-control" rows="10" id="json-input" placeholder='{"Lakehouses": [], "Warehouses": []}'></textarea>
+                    <textarea class="form-control" rows="10" id="json-input" placeholder='{"WorkspaceName": "", "Lakehouses": [], "Warehouses": []}'></textarea>
                 </div>
                 <button class="btn btn-primary" onclick="importJSON()">
                     <span class="icon">📥</span> Import Configuration
                 </button>
             </div>
         </div>
-
+        
         <!-- Preview Tab -->
         <div id="preview-tab" class="content-section">
             <div class="card">
@@ -484,6 +437,7 @@
         let lakehouseCount = 0;
         let warehouseCount = 0;
         let configuration = {
+            WorkspaceName: '',
             Lakehouses: [],
             Warehouses: []
         };
@@ -525,22 +479,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Name</label>
-                    <input type="text" class="form-control" id="lakehouse-name-${lakehouseCount}" placeholder="e.g., SalesLH" required>
-                </div>
-                <div class="form-group">
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" class="checkbox" id="lakehouse-schemas-${lakehouseCount}">
-                        <label for="lakehouse-schemas-${lakehouseCount}">Enable Schemas</label>
-                    </div>
-                </div>
-                <div class="schemas-section" id="lakehouse-schemas-container-${lakehouseCount}">
-                    <div class="item-header">
-                        <h4>Schemas</h4>
-                        <button class="btn btn-primary btn-sm" onclick="addSchema('lakehouse', ${lakehouseCount})">
-                            <span class="icon">➕</span> Add Schema
-                        </button>
-                    </div>
-                    <div id="lakehouse-${lakehouseCount}-schemas"></div>
+                    <input type="text" class="form-control" id="lakehouse-name-${lakehouseCount}" placeholder="e.g., SalesLH, CustomerDataLH" required>
                 </div>
             `;
             
@@ -567,261 +506,60 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Name</label>
-                    <input type="text" class="form-control" id="warehouse-name-${warehouseCount}" placeholder="e.g., FinanceWH" required>
-                </div>
-                <div class="form-group">
-                    <div class="checkbox-wrapper">
-                        <input type="checkbox" class="checkbox" id="warehouse-case-${warehouseCount}">
-                        <label for="warehouse-case-${warehouseCount}">Case-Insensitive</label>
-                    </div>
-                </div>
-                <div class="schemas-section">
-                    <div class="item-header">
-                        <h4>Schemas</h4>
-                        <button class="btn btn-primary btn-sm" onclick="addSchema('warehouse', ${warehouseCount})">
-                            <span class="icon">➕</span> Add Schema
-                        </button>
-                    </div>
-                    <div id="warehouse-${warehouseCount}-schemas"></div>
+                    <input type="text" class="form-control" id="warehouse-name-${warehouseCount}" placeholder="e.g., FinanceWH, ReportingWH" required>
                 </div>
             `;
             
             container.appendChild(warehouseCard);
         }
 
-        function addSchema(type, parentId) {
-            const schemaId = Date.now();
-            const container = document.getElementById(`${type}-${parentId}-schemas`);
-            
-            const schemaCard = document.createElement('div');
-            schemaCard.className = 'nested-item';
-            schemaCard.id = `schema-${schemaId}`;
-            schemaCard.innerHTML = `
-                <div class="item-header">
-                    <h5>Schema</h5>
-                    <button class="btn btn-danger btn-sm" onclick="removeSchema('${schemaId}')">
-                        <span class="icon">✖</span>
-                    </button>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Schema Name</label>
-                    <input type="text" class="form-control" id="schema-name-${schemaId}" placeholder="e.g., sales, dbo" required>
-                </div>
-                <div class="tables-section">
-                    <div class="item-header">
-                        <h6>Tables</h6>
-                        <button class="btn btn-primary btn-sm" onclick="addTable('${schemaId}')">
-                            <span class="icon">➕</span> Add Table
-                        </button>
-                    </div>
-                    <div id="schema-${schemaId}-tables"></div>
-                </div>
-            `;
-            
-            container.appendChild(schemaCard);
-        }
-
-        function addTable(schemaId) {
-            const tableId = Date.now();
-            const container = document.getElementById(`schema-${schemaId}-tables`);
-            
-            const tableCard = document.createElement('div');
-            tableCard.className = 'nested-item';
-            tableCard.id = `table-${tableId}`;
-            tableCard.innerHTML = `
-                <div class="item-header">
-                    <h6>Table</h6>
-                    <button class="btn btn-danger btn-sm" onclick="removeTable('${tableId}')">
-                        <span class="icon">✖</span>
-                    </button>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Table Name</label>
-                    <input type="text" class="form-control" id="table-name-${tableId}" placeholder="e.g., Orders, Transactions" required>
-                </div>
-                <div class="columns-section">
-                    <div class="item-header">
-                        <h6>Columns</h6>
-                        <button class="btn btn-primary btn-sm" onclick="addColumn('${tableId}')">
-                            <span class="icon">➕</span> Add Column
-                        </button>
-                    </div>
-                    <div class="columns-grid" id="table-${tableId}-columns"></div>
-                </div>
-            `;
-            
-            container.appendChild(tableCard);
-        }
-
-        function addColumn(tableId) {
-            const columnId = Date.now();
-            const container = document.getElementById(`table-${tableId}-columns`);
-            
-            const columnDiv = document.createElement('div');
-            columnDiv.className = 'column-item';
-            columnDiv.id = `column-${columnId}`;
-            columnDiv.innerHTML = `
-                <input type="text" placeholder="Column name" id="col-name-${columnId}">
-                <input type="text" placeholder="Type" id="col-type-${columnId}">
-                <label class="checkbox-wrapper">
-                    <input type="checkbox" id="col-pk-${columnId}">
-                    <span>PK</span>
-                </label>
-                <button class="btn btn-danger btn-sm" onclick="removeColumn('${columnId}')">✖</button>
-            `;
-            
-            container.appendChild(columnDiv);
-        }
-
         function removeLakehouse(id) {
             document.getElementById(`lakehouse-${id}`).remove();
-            checkEmptyState('lakehouses-container');
+            checkEmptyState('lakehouses-container', 'lakehouses', 'Add Lakehouse');
         }
 
         function removeWarehouse(id) {
             document.getElementById(`warehouse-${id}`).remove();
-            checkEmptyState('warehouses-container');
+            checkEmptyState('warehouses-container', 'warehouses', 'Add Warehouse');
         }
 
-        function removeSchema(id) {
-            document.getElementById(`schema-${id}`).remove();
-        }
-
-        function removeTable(id) {
-            document.getElementById(`table-${id}`).remove();
-        }
-
-        function removeColumn(id) {
-            document.getElementById(`column-${id}`).remove();
-        }
-
-        function checkEmptyState(containerId) {
+        function checkEmptyState(containerId, type, buttonText) {
             const container = document.getElementById(containerId);
             if (container.children.length === 0) {
-                const type = containerId.includes('lakehouse') ? 'lakehouses' : 'warehouses';
-                const title = containerId.includes('lakehouse') ? 'Lakehouse' : 'Warehouse';
                 container.innerHTML = `
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
                         </svg>
-                        <p>No ${type} configured yet. Click "Add ${title}" to get started.</p>
+                        <p>No ${type} configured yet. Click "${buttonText}" to get started.</p>
                     </div>
                 `;
             }
         }
 
         function collectFormData() {
+            const workspaceName = document.getElementById('workspace-name')?.value || '';
             const lakehouses = [];
             const warehouses = [];
             
             // Collect Lakehouses
-            document.querySelectorAll('[id^="lakehouse-"]:not([id*="name"]):not([id*="schemas"])').forEach(lh => {
-                const id = lh.id.split('-')[1];
-                const lakehouse = {
-                    name: document.getElementById(`lakehouse-name-${id}`)?.value || '',
-                    enableSchemas: document.getElementById(`lakehouse-schemas-${id}`)?.checked || false,
-                    schemas: []
-                };
-                
-                // Collect schemas for this lakehouse
-                lh.querySelectorAll('[id^="schema-"]').forEach(schema => {
-                    const schemaId = schema.id.split('-')[1];
-                    const schemaObj = {
-                        name: document.getElementById(`schema-name-${schemaId}`)?.value || '',
-                        tables: []
-                    };
-                    
-                    // Collect tables for this schema
-                    schema.querySelectorAll('[id^="table-"]').forEach(table => {
-                        const tableId = table.id.split('-')[1];
-                        const tableObj = {
-                            name: document.getElementById(`table-name-${tableId}`)?.value || '',
-                            columns: []
-                        };
-                        
-                        // Collect columns for this table
-                        table.querySelectorAll('[id^="column-"]').forEach(column => {
-                            const columnId = column.id.split('-')[1];
-                            const columnObj = {
-                                name: document.getElementById(`col-name-${columnId}`)?.value || '',
-                                type: document.getElementById(`col-type-${columnId}`)?.value || '',
-                                primaryKey: document.getElementById(`col-pk-${columnId}`)?.checked || false
-                            };
-                            if (columnObj.name) {
-                                tableObj.columns.push(columnObj);
-                            }
-                        });
-                        
-                        if (tableObj.name) {
-                            schemaObj.tables.push(tableObj);
-                        }
-                    });
-                    
-                    if (schemaObj.name) {
-                        lakehouse.schemas.push(schemaObj);
-                    }
-                });
-                
-                if (lakehouse.name) {
-                    lakehouses.push(lakehouse);
+            document.querySelectorAll('[id^="lakehouse-"][id$="-name"]').forEach(input => {
+                const name = input.value.trim();
+                if (name) {
+                    lakehouses.push({ name: name });
                 }
             });
             
             // Collect Warehouses
-            document.querySelectorAll('[id^="warehouse-"]:not([id*="name"]):not([id*="case"])').forEach(wh => {
-                const id = wh.id.split('-')[1];
-                const warehouse = {
-                    name: document.getElementById(`warehouse-name-${id}`)?.value || '',
-                    caseInsensitive: document.getElementById(`warehouse-case-${id}`)?.checked || false,
-                    schemas: []
-                };
-                
-                // Collect schemas for this warehouse
-                wh.querySelectorAll('[id^="schema-"]').forEach(schema => {
-                    const schemaId = schema.id.split('-')[1];
-                    const schemaObj = {
-                        name: document.getElementById(`schema-name-${schemaId}`)?.value || '',
-                        tables: []
-                    };
-                    
-                    // Collect tables for this schema
-                    schema.querySelectorAll('[id^="table-"]').forEach(table => {
-                        const tableId = table.id.split('-')[1];
-                        const tableObj = {
-                            name: document.getElementById(`table-name-${tableId}`)?.value || '',
-                            columns: []
-                        };
-                        
-                        // Collect columns for this table
-                        table.querySelectorAll('[id^="column-"]').forEach(column => {
-                            const columnId = column.id.split('-')[1];
-                            const columnObj = {
-                                name: document.getElementById(`col-name-${columnId}`)?.value || '',
-                                type: document.getElementById(`col-type-${columnId}`)?.value || '',
-                                primaryKey: document.getElementById(`col-pk-${columnId}`)?.checked || false
-                            };
-                            if (columnObj.name) {
-                                tableObj.columns.push(columnObj);
-                            }
-                        });
-                        
-                        if (tableObj.name) {
-                            schemaObj.tables.push(tableObj);
-                        }
-                    });
-                    
-                    if (schemaObj.name) {
-                        warehouse.schemas.push(schemaObj);
-                    }
-                });
-                
-                if (warehouse.name) {
-                    warehouses.push(warehouse);
+            document.querySelectorAll('[id^="warehouse-"][id$="-name"]').forEach(input => {
+                const name = input.value.trim();
+                if (name) {
+                    warehouses.push({ name: name });
                 }
             });
             
             configuration = {
+                WorkspaceName: workspaceName,
                 Lakehouses: lakehouses,
                 Warehouses: warehouses
             };
@@ -848,6 +586,11 @@
         function submitForm() {
             const data = collectFormData();
             
+            if (!data.WorkspaceName.trim()) {
+                alert('Please enter a workspace name before submitting.');
+                return;
+            }
+            
             if (data.Lakehouses.length === 0 && data.Warehouses.length === 0) {
                 alert('Please add at least one Lakehouse or Warehouse before submitting.');
                 return;
@@ -864,12 +607,10 @@
                 body: JSON.stringify(data)
             })
             .then(response => {
-                // Check if response is ok
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                // Try to parse as JSON, fallback to text if it fails
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.indexOf("application/json") !== -1) {
                     return response.json();
@@ -881,7 +622,6 @@
                 alert('Configuration submitted successfully!');
                 console.log('Success:', result);
                 
-                // Optionally clear the form or redirect
                 if (confirm('Would you like to create another configuration?')) {
                     location.reload();
                 }
@@ -912,49 +652,20 @@
                 // Clear existing form
                 document.getElementById('lakehouses-container').innerHTML = '';
                 document.getElementById('warehouses-container').innerHTML = '';
+                document.getElementById('workspace-name').value = '';
                 lakehouseCount = 0;
                 warehouseCount = 0;
+                
+                // Import Workspace Name
+                if (data.WorkspaceName) {
+                    document.getElementById('workspace-name').value = data.WorkspaceName;
+                }
                 
                 // Import Lakehouses
                 if (data.Lakehouses && Array.isArray(data.Lakehouses)) {
                     data.Lakehouses.forEach(lakehouse => {
                         addLakehouse();
-                        const lhId = lakehouseCount;
-                        
-                        document.getElementById(`lakehouse-name-${lhId}`).value = lakehouse.name || '';
-                        document.getElementById(`lakehouse-schemas-${lhId}`).checked = lakehouse.enableSchemas || false;
-                        
-                        if (lakehouse.schemas && Array.isArray(lakehouse.schemas)) {
-                            lakehouse.schemas.forEach(schema => {
-                                addSchema('lakehouse', lhId);
-                                const schemaEl = document.querySelector(`#lakehouse-${lhId}-schemas > div:last-child`);
-                                const schemaId = schemaEl.id.split('-')[1];
-                                
-                                document.getElementById(`schema-name-${schemaId}`).value = schema.name || '';
-                                
-                                if (schema.tables && Array.isArray(schema.tables)) {
-                                    schema.tables.forEach(table => {
-                                        addTable(schemaId);
-                                        const tableEl = document.querySelector(`#schema-${schemaId}-tables > div:last-child`);
-                                        const tableId = tableEl.id.split('-')[1];
-                                        
-                                        document.getElementById(`table-name-${tableId}`).value = table.name || '';
-                                        
-                                        if (table.columns && Array.isArray(table.columns)) {
-                                            table.columns.forEach(column => {
-                                                addColumn(tableId);
-                                                const columnEl = document.querySelector(`#table-${tableId}-columns > div:last-child`);
-                                                const columnId = columnEl.id.split('-')[1];
-                                                
-                                                document.getElementById(`col-name-${columnId}`).value = column.name || '';
-                                                document.getElementById(`col-type-${columnId}`).value = column.type || '';
-                                                document.getElementById(`col-pk-${columnId}`).checked = column.primaryKey || false;
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                        document.getElementById(`lakehouse-name-${lakehouseCount}`).value = lakehouse.name || '';
                     });
                 }
                 
@@ -962,42 +673,7 @@
                 if (data.Warehouses && Array.isArray(data.Warehouses)) {
                     data.Warehouses.forEach(warehouse => {
                         addWarehouse();
-                        const whId = warehouseCount;
-                        
-                        document.getElementById(`warehouse-name-${whId}`).value = warehouse.name || '';
-                        document.getElementById(`warehouse-case-${whId}`).checked = warehouse.caseInsensitive || false;
-                        
-                        if (warehouse.schemas && Array.isArray(warehouse.schemas)) {
-                            warehouse.schemas.forEach(schema => {
-                                addSchema('warehouse', whId);
-                                const schemaEl = document.querySelector(`#warehouse-${whId}-schemas > div:last-child`);
-                                const schemaId = schemaEl.id.split('-')[1];
-                                
-                                document.getElementById(`schema-name-${schemaId}`).value = schema.name || '';
-                                
-                                if (schema.tables && Array.isArray(schema.tables)) {
-                                    schema.tables.forEach(table => {
-                                        addTable(schemaId);
-                                        const tableEl = document.querySelector(`#schema-${schemaId}-tables > div:last-child`);
-                                        const tableId = tableEl.id.split('-')[1];
-                                        
-                                        document.getElementById(`table-name-${tableId}`).value = table.name || '';
-                                        
-                                        if (table.columns && Array.isArray(table.columns)) {
-                                            table.columns.forEach(column => {
-                                                addColumn(tableId);
-                                                const columnEl = document.querySelector(`#table-${tableId}-columns > div:last-child`);
-                                                const columnId = columnEl.id.split('-')[1];
-                                                
-                                                document.getElementById(`col-name-${columnId}`).value = column.name || '';
-                                                document.getElementById(`col-type-${columnId}`).value = column.type || '';
-                                                document.getElementById(`col-pk-${columnId}`).checked = column.primaryKey || false;
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                        document.getElementById(`warehouse-name-${warehouseCount}`).value = warehouse.name || '';
                     });
                 }
                 
@@ -1010,9 +686,9 @@
             }
         }
 
-        // Initialize with empty state
-        checkEmptyState('lakehouses-container');
-        checkEmptyState('warehouses-container');
+        // Initialize with empty states
+        checkEmptyState('lakehouses-container', 'lakehouses', 'Add Lakehouse');
+        checkEmptyState('warehouses-container', 'warehouses', 'Add Warehouse');
     </script>
 </body>
 </html>
