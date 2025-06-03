@@ -542,21 +542,21 @@
             const lakehouses = [];
             const warehouses = [];
             
-            // Collect Lakehouses
-            document.querySelectorAll('[id^="lakehouse-"][id$="-name"]').forEach(input => {
-                const name = input.value.trim();
-                if (name) {
-                    lakehouses.push({ name: name });
+            // Collect Lakehouses - look for all lakehouse name inputs
+            for (let i = 1; i <= lakehouseCount; i++) {
+                const nameInput = document.getElementById(`lakehouse-name-${i}`);
+                if (nameInput && nameInput.value.trim()) {
+                    lakehouses.push({ name: nameInput.value.trim() });
                 }
-            });
+            }
             
-            // Collect Warehouses
-            document.querySelectorAll('[id^="warehouse-"][id$="-name"]').forEach(input => {
-                const name = input.value.trim();
-                if (name) {
-                    warehouses.push({ name: name });
+            // Collect Warehouses - look for all warehouse name inputs
+            for (let i = 1; i <= warehouseCount; i++) {
+                const nameInput = document.getElementById(`warehouse-name-${i}`);
+                if (nameInput && nameInput.value.trim()) {
+                    warehouses.push({ name: nameInput.value.trim() });
                 }
-            });
+            }
             
             configuration = {
                 WorkspaceName: workspaceName,
