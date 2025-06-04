@@ -787,7 +787,7 @@
                         }
                     }
                     
-                    // Collect tables for this lakehouse
+                    // Collect tables for this lakehouse (optional)
                     const tableCountForLakehouse = tableCount[`lakehouse-${i}`] || 0;
                     for (let j = 1; j <= tableCountForLakehouse; j++) {
                         const tableNameInput = document.getElementById(`lakehouse-${i}-table-name-${j}`);
@@ -797,7 +797,7 @@
                                 columns: []
                             };
                             
-                            // Collect columns for this table
+                            // Collect columns for this table (optional)
                             const columnCountForTable = columnCount[`lakehouse-${i}-table-${j}`] || 0;
                             for (let k = 1; k <= columnCountForTable; k++) {
                                 const columnNameInput = document.getElementById(`lakehouse-${i}-table-${j}-column-name-${k}`);
@@ -812,9 +812,8 @@
                                 }
                             }
                             
-                            if (table.columns.length > 0) {
-                                lakehouse.tables.push(table);
-                            }
+                            // Add table even if it has no columns (columns are optional)
+                            lakehouse.tables.push(table);
                         }
                     }
                     
@@ -868,22 +867,20 @@
                 return;
             }
             
-            // Validate tables and columns
+            // Validate optional fields
             for (const lakehouse of data.Lakehouses) {
-                if (lakehouse.tables.length === 0) {
-                    alert(`Lakehouse "${lakehouse.name}" must have at least one table defined.`);
-                    return;
-                }
-                for (const table of lakehouse.tables) {
-                    if (table.columns.length === 0) {
-                        alert(`Table "${table.name}" in Lakehouse "${lakehouse.name}" must have at least one column defined.`);
-                        return;
-                    }
-                }
-                // Validate notebook if checkbox is checked
+                // Validate notebook if checkbox is checked but name is empty
                 if (lakehouse.attachedNotebook !== undefined && !lakehouse.attachedNotebook) {
                     alert(`Please provide a notebook name for Lakehouse "${lakehouse.name}" or uncheck the notebook option.`);
                     return;
+                }
+                
+                // Validate tables only if they exist
+                for (const table of lakehouse.tables) {
+                    // Warn if table has no columns (but don't block submission)
+                    if (table.columns.length === 0) {
+                        console.warn(`Table "${table.name}" in Lakehouse "${lakehouse.name}" has no columns defined.`);
+                    }
                 }
             }
             
