@@ -506,31 +506,11 @@
             Warehouses: []
         };
         
-        // Microsoft Fabric compliant data types
         const fabricDataTypes = [
-            'bigint',
-            'binary',
-            'bit',
-            'char',
-            'date',
-            'datetime',
-            'datetime2',
-            'datetimeoffset',
-            'decimal',
-            'float',
-            'int',
-            'money',
-            'nchar',
-            'nvarchar',
-            'real',
-            'smalldatetime',
-            'smallint',
-            'smallmoney',
-            'time',
-            'tinyint',
-            'uniqueidentifier',
-            'varbinary',
-            'varchar'
+            'bigint', 'binary', 'bit', 'char', 'date', 'datetime', 'datetime2', 
+            'datetimeoffset', 'decimal', 'float', 'int', 'money', 'nchar', 
+            'nvarchar', 'real', 'smalldatetime', 'smallint', 'smallmoney', 
+            'time', 'tinyint', 'uniqueidentifier', 'varbinary', 'varchar'
         ];
         
         function switchTab(tab) {
@@ -551,6 +531,7 @@
         }
         
         function addLakehouse() {
+            console.log('addLakehouse called, current lakehouseCount before increment:', lakehouseCount); // DEBUG
             lakehouseCount++;
             const container = document.getElementById('lakehouses-container');
             
@@ -600,6 +581,7 @@
             `;
             
             container.appendChild(lakehouseCard);
+            console.log('New lakehouse card for ID', lakehouseCount, 'should be appended.'); // DEBUG
         }
         
         function addTable(lakehouseId) {
@@ -640,7 +622,6 @@
                     </div>
                 </div>
             `;
-            
             container.appendChild(tableCard);
         }
         
@@ -655,9 +636,7 @@
             columnCount[`lakehouse-${lakehouseId}-table-${tableId}`]++;
             const columnId = columnCount[`lakehouse-${lakehouseId}-table-${tableId}`];
             
-            let dataTypeOptions = fabricDataTypes.map(type => 
-                `<option value="${type}">${type}</option>`
-            ).join('');
+            let dataTypeOptions = fabricDataTypes.map(type => `<option value="${type}">${type}</option>`).join('');
             
             const columnRow = document.createElement('div');
             columnRow.className = 'column-row';
@@ -672,27 +651,31 @@
                     <span class="icon">🗑️</span>
                 </button>
             `;
-            
             container.appendChild(columnRow);
         }
         
         function removeColumn(lakehouseId, tableId, columnId) {
-            document.getElementById(`lakehouse-${lakehouseId}-table-${tableId}-column-${columnId}`).remove();
+            const columnElement = document.getElementById(`lakehouse-${lakehouseId}-table-${tableId}-column-${columnId}`);
+            if (columnElement) columnElement.remove();
+            
             const container = document.getElementById(`columns-container-${lakehouseId}-${tableId}`);
-            if (container.children.length === 0) {
+            if (container && container.children.length === 0) {
                 container.innerHTML = '<div class="empty-state" style="padding: 1rem;"><p style="font-size: 0.75rem;">No columns defined. Click "Add Column" to create one.</p></div>';
             }
         }
         
         function removeTable(lakehouseId, tableId) {
-            document.getElementById(`lakehouse-${lakehouseId}-table-${tableId}`).remove();
+            const tableElement = document.getElementById(`lakehouse-${lakehouseId}-table-${tableId}`);
+            if (tableElement) tableElement.remove();
+
             const container = document.getElementById(`tables-container-${lakehouseId}`);
-            if (container.children.length === 0) {
+            if (container && container.children.length === 0) {
                 container.innerHTML = '<div class="empty-state" style="padding: 1.5rem;"><p style="font-size: 0.875rem;">No tables defined. Click "Add Table" to create one.</p></div>';
             }
         }
         
         function addWarehouse() {
+            console.log('addWarehouse called, current warehouseCount before increment:', warehouseCount); // DEBUG
             warehouseCount++;
             const container = document.getElementById('warehouses-container');
             
@@ -715,14 +698,15 @@
                     <input type="text" class="form-control" id="warehouse-name-${warehouseCount}" placeholder="e.g., FinanceWH, ReportingWH" required>
                 </div>
             `;
-            
             container.appendChild(warehouseCard);
+            console.log('New warehouse card for ID', warehouseCount, 'should be appended.'); // DEBUG
         }
         
         function removeLakehouse(id) {
-            document.getElementById(`lakehouse-${id}`).remove();
+            const lakehouseElement = document.getElementById(`lakehouse-${id}`);
+            if (lakehouseElement) lakehouseElement.remove();
+            
             delete tableCount[`lakehouse-${id}`];
-            // Also clean up column counts for tables under this lakehouse
             Object.keys(columnCount).forEach(key => {
                 if (key.startsWith(`lakehouse-${id}-table-`)) {
                     delete columnCount[key];
@@ -732,34 +716,34 @@
         }
         
         function removeWarehouse(id) {
-            document.getElementById(`warehouse-${id}`).remove();
+            const warehouseElement = document.getElementById(`warehouse-${id}`);
+            if (warehouseElement) warehouseElement.remove();
             checkEmptyState('warehouses-container', 'warehouses', 'Add Warehouse');
         }
         
         function checkEmptyState(containerId, type, buttonText) {
             const container = document.getElementById(containerId);
-            if (container.children.length === 0) {
+            if (container && container.children.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                        </svg>
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                         <p>No ${type} configured yet. Click "${buttonText}" to get started.</p>
-                    </div>
-                `;
+                    </div>`;
             }
         }
         
         function toggleNotebookInput(lakehouseId) {
             const checkbox = document.getElementById(`lakehouse-notebook-check-${lakehouseId}`);
             const inputDiv = document.getElementById(`lakehouse-notebook-input-${lakehouseId}`);
+            const nameInput = document.getElementById(`lakehouse-notebook-name-${lakehouseId}`);
             
-            if (checkbox.checked) {
-                inputDiv.style.display = 'block';
-            } else {
-                inputDiv.style.display = 'none';
-                // Clear the notebook name when unchecked
-                document.getElementById(`lakehouse-notebook-name-${lakehouseId}`).value = '';
+            if (checkbox && inputDiv && nameInput) {
+                if (checkbox.checked) {
+                    inputDiv.style.display = 'block';
+                } else {
+                    inputDiv.style.display = 'none';
+                    nameInput.value = '';
+                }
             }
         }
         
@@ -768,66 +752,54 @@
             const lakehouses = [];
             const warehouses = [];
             
-            // Collect Lakehouses with tables and notebook info
             for (let i = 1; i <= lakehouseCount; i++) {
                 const lakehouseElement = document.getElementById(`lakehouse-${i}`);
-                if (!lakehouseElement) continue; // Skip if element was removed
+                if (!lakehouseElement) continue; 
 
                 const nameInput = document.getElementById(`lakehouse-name-${i}`);
                 if (nameInput && nameInput.value.trim()) {
-                    const lakehouse = {
-                        name: nameInput.value.trim(),
-                        tables: []
-                    };
+                    const lakehouse = { name: nameInput.value.trim(), tables: [] };
                     
-                    // Check if notebook is attached
                     const notebookCheckbox = document.getElementById(`lakehouse-notebook-check-${i}`);
                     if (notebookCheckbox && notebookCheckbox.checked) {
                         const notebookNameInput = document.getElementById(`lakehouse-notebook-name-${i}`);
-                        // If checkbox is checked, store the notebook name. It will be an empty string if not provided.
                         lakehouse.attachedNotebook = (notebookNameInput ? notebookNameInput.value.trim() : "");
                     }
-                    // If checkbox is NOT checked, lakehouse.attachedNotebook remains undefined.
                                         
-                    const tableCountForLakehouse = tableCount[`lakehouse-${i}`] || 0;
-                    for (let j = 1; j <= tableCountForLakehouse; j++) {
+                    const currentTableCount = tableCount[`lakehouse-${i}`] || 0;
+                    for (let j = 1; j <= currentTableCount; j++) {
                         const tableElement = document.getElementById(`lakehouse-${i}-table-${j}`);
-                        if (!tableElement) continue; // Skip if element was removed
+                        if (!tableElement) continue;
 
                         const tableNameInput = document.getElementById(`lakehouse-${i}-table-name-${j}`);
                         if (tableNameInput && tableNameInput.value.trim()) {
-                            const table = {
-                                name: tableNameInput.value.trim(),
-                                columns: []
-                            };
+                            const table = { name: tableNameInput.value.trim(), columns: [] };
                             
-                            const columnCountForTable = columnCount[`lakehouse-${i}-table-${j}`] || 0;
-                            for (let k = 1; k <= columnCountForTable; k++) {
+                            const currentColumnCount = columnCount[`lakehouse-${i}-table-${j}`] || 0;
+                            for (let k = 1; k <= currentColumnCount; k++) {
                                 const columnElement = document.getElementById(`lakehouse-${i}-table-${j}-column-${k}`);
-                                if (!columnElement) continue; // Skip if element was removed
+                                if (!columnElement) continue;
 
                                 const columnNameInput = document.getElementById(`lakehouse-${i}-table-${j}-column-name-${k}`);
                                 const columnTypeSelect = document.getElementById(`lakehouse-${i}-table-${j}-column-type-${k}`);
                                 
-                                if (columnNameInput && columnTypeSelect && 
-                                    columnNameInput.value.trim() && columnTypeSelect.value) {
+                                if (columnNameInput && columnTypeSelect && columnNameInput.value.trim() && columnTypeSelect.value) {
                                     table.columns.push({
                                         name: columnNameInput.value.trim(),
                                         dataType: columnTypeSelect.value
                                     });
                                 }
                             }
-                            lakehouse.tables.push(table);
+                            if (table.name) lakehouse.tables.push(table);
                         }
                     }
                     lakehouses.push(lakehouse);
                 }
             }
             
-            // Collect Warehouses
             for (let i = 1; i <= warehouseCount; i++) {
                 const warehouseElement = document.getElementById(`warehouse-${i}`);
-                if (!warehouseElement) continue; // Skip if element was removed
+                if (!warehouseElement) continue;
 
                 const nameInput = document.getElementById(`warehouse-name-${i}`);
                 if (nameInput && nameInput.value.trim()) {
@@ -835,12 +807,7 @@
                 }
             }
             
-            configuration = {
-                WorkspaceName: workspaceName,
-                Lakehouses: lakehouses,
-                Warehouses: warehouses
-            };
-            
+            configuration = { WorkspaceName: workspaceName, Lakehouses: lakehouses, Warehouses: warehouses };
             return configuration;
         }
         
@@ -856,7 +823,9 @@
             const a = document.createElement('a');
             a.href = url;
             a.download = 'fabric-configuration.json';
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
         
@@ -865,27 +834,23 @@
             
             if (!data.WorkspaceName.trim()) {
                 alert('Please enter a workspace name before submitting.');
-                switchTab('form'); // Switch to form tab
-                document.getElementById('workspace-name').focus();
+                switchTab('form');
+                document.getElementById('workspace-name')?.focus();
                 return;
             }
             
             if (data.Lakehouses.length === 0 && data.Warehouses.length === 0) {
                 alert('Please add at least one Lakehouse or Warehouse before submitting.');
-                switchTab('form'); // Switch to form tab
+                switchTab('form');
                 return;
             }
             
-            // Validate optional fields
             for (const lakehouse of data.Lakehouses) {
-                // Validate notebook if checkbox was checked but name is empty
                 if (lakehouse.hasOwnProperty('attachedNotebook') && lakehouse.attachedNotebook === "") {
                     alert(`Please provide a notebook name for Lakehouse "${lakehouse.name}" or uncheck the "Attach a Fabric Notebook" option.`);
-                    switchTab('form'); // Switch to form tab to allow user to fix
-                    // Try to find the problematic input to focus, might be complex if IDs are purely dynamic
-                    // For simplicity, focusing the general area or first lakehouse name.
-                    const firstLakehouseNameField = document.querySelector('#lakehouses-container .item-card input[type="text"]');
-                    if (firstLakehouseNameField) firstLakehouseNameField.focus();
+                    switchTab('form');
+                    const problematicInput = document.getElementById(`lakehouse-notebook-name-${data.Lakehouses.indexOf(lakehouse) + 1}`); // This attempt to find ID might be flawed if items were removed.
+                    if(problematicInput) problematicInput.focus(); else document.getElementById(`lakehouse-name-${data.Lakehouses.indexOf(lakehouse) + 1}`)?.focus();
                     return; 
                 }
                 
@@ -893,35 +858,26 @@
                     if (table.columns.length === 0) {
                         console.warn(`Table "${table.name}" in Lakehouse "${lakehouse.name}" has no columns defined.`);
                     }
-                    // You could add more validation here, e.g., if a table name is present but has no columns, is that an error?
                 }
             }
             
-            const webhookUrl = 'http://localhost:5678/webhook-test/fabric-provisioner'; // Replace with your actual n8n webhook URL
+            const webhookUrl = 'http://localhost:5678/webhook-test/fabric-provisioner';
             
             fetch(webhookUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => { throw new Error(`HTTP error! status: ${response.status}, message: ${text || 'No error message from server.'}`); });
                 }
-                
                 const contentType = response.headers.get("content-type");
-                if (contentType && contentType.indexOf("application/json") !== -1) {
-                    return response.json();
-                } else {
-                    return response.text(); 
-                }
+                return (contentType && contentType.includes("application/json")) ? response.json() : response.text();
             })
             .then(result => {
                 alert('Configuration submitted successfully!');
                 console.log('Success:', result);
-                
                 if (confirm('Would you like to create another configuration?')) {
                     location.reload();
                 }
@@ -934,39 +890,37 @@
         
         function handleFileUpload(event) {
             const file = event.target.files[0];
+            const fileNameDisplay = document.getElementById('file-name');
+            const jsonInputArea = document.getElementById('json-input');
+
             if (file) {
-                document.getElementById('file-name').textContent = file.name;
-                
+                if(fileNameDisplay) fileNameDisplay.textContent = file.name;
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
-                        const content = e.target.result;
-                        document.getElementById('json-input').value = content;
-                        // Automatically attempt to import after loading content to textarea
-                        // importJSON(); // Optionally auto-import
+                        if(jsonInputArea) jsonInputArea.value = e.target.result;
                     } catch (error) {
                         alert('Error processing file content: ' + error.message);
-                        console.error('File content processing error:', error);
-                        document.getElementById('file-name').textContent = '';
-                         document.getElementById('json-input').value = '';
+                        if(fileNameDisplay) fileNameDisplay.textContent = '';
+                        if(jsonInputArea) jsonInputArea.value = '';
                     }
                 };
-                reader.onerror = function(error) {
+                reader.onerror = function() {
                     alert('Error reading file.');
-                    console.error('FileReader error:', error);
-                    document.getElementById('file-name').textContent = '';
-                    document.getElementById('json-input').value = '';
+                    if(fileNameDisplay) fileNameDisplay.textContent = '';
+                    if(jsonInputArea) jsonInputArea.value = '';
                 };
                 reader.readAsText(file);
             } else {
-                document.getElementById('file-name').textContent = '';
+                if(fileNameDisplay) fileNameDisplay.textContent = '';
             }
         }
         
         function importJSON() {
-            const jsonText = document.getElementById('json-input').value;
+            const jsonInputArea = document.getElementById('json-input');
+            const jsonText = jsonInputArea?.value;
             
-            if (!jsonText.trim()) {
+            if (!jsonText || !jsonText.trim()) {
                 alert('JSON input is empty. Please paste JSON or upload a file.');
                 return;
             }
@@ -976,53 +930,56 @@
                 importJSONData(data);
             } catch (error) {
                 alert('Invalid JSON format. Please check your input.\nError: ' + error.message);
-                console.error('JSON Parse Error:', error);
             }
         }
         
         function importJSONData(data) {
-            // Clear existing form
             document.getElementById('lakehouses-container').innerHTML = '';
             checkEmptyState('lakehouses-container', 'lakehouses', 'Add Lakehouse');
             document.getElementById('warehouses-container').innerHTML = '';
             checkEmptyState('warehouses-container', 'warehouses', 'Add Warehouse');
-            document.getElementById('workspace-name').value = '';
+            const workspaceNameEl = document.getElementById('workspace-name');
+            if(workspaceNameEl) workspaceNameEl.value = '';
+            
             lakehouseCount = 0;
             warehouseCount = 0;
             tableCount = {};
             columnCount = {};
             
-            // Import Workspace Name
-            if (data.WorkspaceName) {
-                document.getElementById('workspace-name').value = data.WorkspaceName;
+            if (data.WorkspaceName && workspaceNameEl) {
+                workspaceNameEl.value = data.WorkspaceName;
             }
             
-            // Import Lakehouses
             if (data.Lakehouses && Array.isArray(data.Lakehouses)) {
                 data.Lakehouses.forEach(lakehouseData => {
-                    addLakehouse(); // This increments lakehouseCount
-                    const currentLakehouseId = lakehouseCount;
-                    document.getElementById(`lakehouse-name-${currentLakehouseId}`).value = lakehouseData.name || '';
+                    addLakehouse(); 
+                    const currentLakehouseId = lakehouseCount; // addLakehouse has incremented it
+                    const lhNameEl = document.getElementById(`lakehouse-name-${currentLakehouseId}`);
+                    if(lhNameEl) lhNameEl.value = lakehouseData.name || '';
                     
                     if (lakehouseData.hasOwnProperty('attachedNotebook')) {
                         const notebookCheckbox = document.getElementById(`lakehouse-notebook-check-${currentLakehouseId}`);
-                        notebookCheckbox.checked = true;
-                        toggleNotebookInput(currentLakehouseId); // This will show the input
-                        document.getElementById(`lakehouse-notebook-name-${currentLakehouseId}`).value = lakehouseData.attachedNotebook || '';
+                        const notebookNameEl = document.getElementById(`lakehouse-notebook-name-${currentLakehouseId}`);
+                        if(notebookCheckbox) notebookCheckbox.checked = true;
+                        toggleNotebookInput(currentLakehouseId); 
+                        if(notebookNameEl) notebookNameEl.value = lakehouseData.attachedNotebook || '';
                     }
                     
                     if (lakehouseData.tables && Array.isArray(lakehouseData.tables)) {
                         lakehouseData.tables.forEach(tableData => {
-                            addTable(currentLakehouseId); // This increments tableCount for this lakehouse
+                            addTable(currentLakehouseId); 
                             const currentTableId = tableCount[`lakehouse-${currentLakehouseId}`];
-                            document.getElementById(`lakehouse-${currentLakehouseId}-table-name-${currentTableId}`).value = tableData.name || '';
+                            const tableNameEl = document.getElementById(`lakehouse-${currentLakehouseId}-table-name-${currentTableId}`);
+                            if(tableNameEl) tableNameEl.value = tableData.name || '';
                             
                             if (tableData.columns && Array.isArray(tableData.columns)) {
                                 tableData.columns.forEach(columnData => {
-                                    addColumn(currentLakehouseId, currentTableId); // This increments columnCount for this table
+                                    addColumn(currentLakehouseId, currentTableId); 
                                     const currentColumnId = columnCount[`lakehouse-${currentLakehouseId}-table-${currentTableId}`];
-                                    document.getElementById(`lakehouse-${currentLakehouseId}-table-${currentTableId}-column-name-${currentColumnId}`).value = columnData.name || '';
-                                    document.getElementById(`lakehouse-${currentLakehouseId}-table-${currentTableId}-column-type-${currentColumnId}`).value = columnData.dataType || '';
+                                    const colNameEl = document.getElementById(`lakehouse-${currentLakehouseId}-table-${currentTableId}-column-name-${currentColumnId}`);
+                                    const colTypeEl = document.getElementById(`lakehouse-${currentLakehouseId}-table-${currentTableId}-column-type-${currentColumnId}`);
+                                    if(colNameEl) colNameEl.value = columnData.name || '';
+                                    if(colTypeEl) colTypeEl.value = columnData.dataType || '';
                                 });
                             }
                         });
@@ -1030,11 +987,11 @@
                 });
             }
             
-            // Import Warehouses
             if (data.Warehouses && Array.isArray(data.Warehouses)) {
                 data.Warehouses.forEach(warehouseData => {
-                    addWarehouse(); // This increments warehouseCount
-                    document.getElementById(`warehouse-name-${warehouseCount}`).value = warehouseData.name || '';
+                    addWarehouse(); 
+                    const whNameEl = document.getElementById(`warehouse-name-${warehouseCount}`);
+                    if(whNameEl) whNameEl.value = warehouseData.name || '';
                 });
             }
             
@@ -1042,7 +999,6 @@
             switchTab('form');
         }
         
-        // Initialize with empty states on page load
         document.addEventListener('DOMContentLoaded', () => {
             checkEmptyState('lakehouses-container', 'lakehouses', 'Add Lakehouse');
             checkEmptyState('warehouses-container', 'warehouses', 'Add Warehouse');
