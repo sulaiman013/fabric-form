@@ -531,12 +531,14 @@
         }
         
         function addLakehouse() {
-            console.log('addLakehouse called, current lakehouseCount before increment:', lakehouseCount); // DEBUG
+            console.log('addLakehouse called, current lakehouseCount before increment:', lakehouseCount);
             lakehouseCount++;
             const container = document.getElementById('lakehouses-container');
             
-            if (container.querySelector('.empty-state')) {
-                container.innerHTML = '';
+            // Only remove empty state if it exists
+            const emptyState = container.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
             }
             
             tableCount[`lakehouse-${lakehouseCount}`] = 0;
@@ -581,15 +583,16 @@
             `;
             
             container.appendChild(lakehouseCard);
-            console.log('New lakehouse card for ID', lakehouseCount, 'should be appended.'); // DEBUG
+            console.log('New lakehouse card for ID', lakehouseCount, 'should be appended.');
         }
         
         function addTable(lakehouseId) {
             const containerId = `tables-container-${lakehouseId}`;
             const container = document.getElementById(containerId);
             
-            if (container.querySelector('.empty-state')) {
-                container.innerHTML = '';
+            const emptyState = container.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
             }
             
             tableCount[`lakehouse-${lakehouseId}`]++;
@@ -629,8 +632,9 @@
             const containerId = `columns-container-${lakehouseId}-${tableId}`;
             const container = document.getElementById(containerId);
             
-            if (container.querySelector('.empty-state')) {
-                container.innerHTML = '';
+            const emptyState = container.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
             }
             
             columnCount[`lakehouse-${lakehouseId}-table-${tableId}`]++;
@@ -675,12 +679,14 @@
         }
         
         function addWarehouse() {
-            console.log('addWarehouse called, current warehouseCount before increment:', warehouseCount); // DEBUG
+            console.log('addWarehouse called, current warehouseCount before increment:', warehouseCount);
             warehouseCount++;
             const container = document.getElementById('warehouses-container');
             
-            if (container.querySelector('.empty-state')) {
-                container.innerHTML = '';
+            // Only remove empty state if it exists
+            const emptyState = container.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
             }
             
             const warehouseCard = document.createElement('div');
@@ -699,7 +705,7 @@
                 </div>
             `;
             container.appendChild(warehouseCard);
-            console.log('New warehouse card for ID', warehouseCount, 'should be appended.'); // DEBUG
+            console.log('New warehouse card for ID', warehouseCount, 'should be appended.');
         }
         
         function removeLakehouse(id) {
@@ -849,7 +855,7 @@
                 if (lakehouse.hasOwnProperty('attachedNotebook') && lakehouse.attachedNotebook === "") {
                     alert(`Please provide a notebook name for Lakehouse "${lakehouse.name}" or uncheck the "Attach a Fabric Notebook" option.`);
                     switchTab('form');
-                    const problematicInput = document.getElementById(`lakehouse-notebook-name-${data.Lakehouses.indexOf(lakehouse) + 1}`); // This attempt to find ID might be flawed if items were removed.
+                    const problematicInput = document.getElementById(`lakehouse-notebook-name-${data.Lakehouses.indexOf(lakehouse) + 1}`);
                     if(problematicInput) problematicInput.focus(); else document.getElementById(`lakehouse-name-${data.Lakehouses.indexOf(lakehouse) + 1}`)?.focus();
                     return; 
                 }
@@ -953,7 +959,7 @@
             if (data.Lakehouses && Array.isArray(data.Lakehouses)) {
                 data.Lakehouses.forEach(lakehouseData => {
                     addLakehouse(); 
-                    const currentLakehouseId = lakehouseCount; // addLakehouse has incremented it
+                    const currentLakehouseId = lakehouseCount;
                     const lhNameEl = document.getElementById(`lakehouse-name-${currentLakehouseId}`);
                     if(lhNameEl) lhNameEl.value = lakehouseData.name || '';
                     
