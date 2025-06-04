@@ -574,6 +574,16 @@
                     <label class="form-label">Name</label>
                     <input type="text" class="form-control" id="lakehouse-name-${lakehouseCount}" placeholder="e.g., SalesLH, CustomerDataLH" required>
                 </div>
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="lakehouse-notebook-check-${lakehouseCount}" onchange="toggleNotebookInput(${lakehouseCount})" style="width: auto; margin: 0;">
+                        Attach a Fabric Notebook
+                    </label>
+                    <div id="lakehouse-notebook-input-${lakehouseCount}" style="display: none; margin-top: 0.75rem;">
+                        <label class="form-label">Notebook Name</label>
+                        <input type="text" class="form-control" id="lakehouse-notebook-name-${lakehouseCount}" placeholder="e.g., DataProcessingNotebook, AnalyticsNotebook">
+                    </div>
+                </div>
                 <div class="table-section">
                     <div class="table-header">
                         <h4 class="table-title">📑 Tables</h4>
@@ -735,12 +745,25 @@
             }
         }
         
+        function toggleNotebookInput(lakehouseId) {
+            const checkbox = document.getElementById(`lakehouse-notebook-check-${lakehouseId}`);
+            const inputDiv = document.getElementById(`lakehouse-notebook-input-${lakehouseId}`);
+            
+            if (checkbox.checked) {
+                inputDiv.style.display = 'block';
+            } else {
+                inputDiv.style.display = 'none';
+                // Clear the notebook name when unchecked
+                document.getElementById(`lakehouse-notebook-name-${lakehouseId}`).value = '';
+            }
+        }
+        
         function collectFormData() {
             const workspaceName = document.getElementById('workspace-name')?.value || '';
             const lakehouses = [];
             const warehouses = [];
             
-            // Collect Lakehouses with tables
+            // Collect Lakehouses with tables and notebook info
             for (let i = 1; i <= lakehouseCount; i++) {
                 const nameInput = document.getElementById(`lakehouse-name-${i}`);
                 if (nameInput && nameInput.value.trim()) {
@@ -748,6 +771,15 @@
                         name: nameInput.value.trim(),
                         tables: []
                     };
+                    
+                    // Check if notebook is attached
+                    const notebookCheckbox = document.getElementById(`lakehouse-notebook-check-${i}`);
+                    if (notebookCheckbox && notebookCheckbox.checked) {
+                        const notebookNameInput = document.getElementById(`lakehouse-notebook-name-${i}`);
+                        if (notebookNameInput && notebookNameInput.value.trim()) {
+                            lakehouse.attachedNotebook = notebookNameInput.value.trim();
+                        }
+                    }
                     
                     // Collect tables for this lakehouse
                     const tableCountForLakehouse = tableCount[`lakehouse-${i}`] || 0;
@@ -842,6 +874,11 @@
                         return;
                     }
                 }
+                // Validate notebook if checkbox is checked
+                if (lakehouse.attachedNotebook !== undefined && !lakehouse.attachedNotebook) {
+                    alert(`Please provide a notebook name for Lakehouse "${lakehouse.name}" or uncheck the notebook option.`);
+                    return;
+                }
             }
             
             // n8n webhook URL
@@ -934,6 +971,14 @@
                 data.Lakehouses.forEach(lakehouse => {
                     addLakehouse();
                     document.getElementById(`lakehouse-name-${lakehouseCount}`).value = lakehouse.name || '';
+                    
+                    // Import notebook attachment if present
+                    if (lakehouse.attachedNotebook) {
+                        const notebookCheckbox = document.getElementById(`lakehouse-notebook-check-${lakehouseCount}`);
+                        notebookCheckbox.checked = true;
+                        toggleNotebookInput(lakehouseCount);
+                        document.getElementById(`lakehouse-notebook-name-${lakehouseCount}`).value = lakehouse.attachedNotebook;
+                    }
                     
                     // Import tables for this lakehouse
                     if (lakehouse.tables && Array.isArray(lakehouse.tables)) {
