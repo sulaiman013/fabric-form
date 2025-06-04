@@ -349,6 +349,12 @@
             width: 100%;
             height: 100%;
             cursor: pointer;
+            z-index: 2;
+        }
+        .file-upload label {
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
         }
         .empty-state {
             text-align: center;
@@ -459,9 +465,9 @@
                     <label class="form-label">Upload JSON File</label>
                     <div class="file-upload">
                         <input type="file" id="json-file" accept=".json" onchange="handleFileUpload(event)">
-                        <button class="btn btn-secondary">
+                        <label for="json-file" class="btn btn-secondary" style="margin: 0;">
                             <span class="icon">📤</span> Choose File
-                        </button>
+                        </label>
                     </div>
                     <span id="file-name" style="margin-left: 1rem; color: rgba(255, 255, 255, 0.7);"></span>
                 </div>
@@ -920,12 +926,14 @@
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (file) {
+                // Show file name
+                document.getElementById('file-name').textContent = file.name;
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
                         const content = e.target.result;
                         document.getElementById('json-input').value = content;
-                        document.getElementById('file-name').textContent = file.name;
                         
                         // Automatically import the JSON
                         const data = JSON.parse(content);
@@ -933,7 +941,13 @@
                     } catch (error) {
                         alert('Error reading file: ' + error.message);
                         console.error('File read error:', error);
+                        document.getElementById('file-name').textContent = '';
                     }
+                };
+                reader.onerror = function(error) {
+                    alert('Error reading file');
+                    console.error('FileReader error:', error);
+                    document.getElementById('file-name').textContent = '';
                 };
                 reader.readAsText(file);
             }
