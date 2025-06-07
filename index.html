@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fabric Provisioner</title>
+    <title>FabricForge</title>
     <style>
         * {
             margin: 0;
@@ -373,6 +373,35 @@
             display: inline-block;
             vertical-align: middle;
         }
+        .info-text {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+        .prerequisite-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 0 3rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.875rem;
+        }
+        .footer a {
+            color: #2d5a3d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: #4a7c59;
+            text-decoration: underline;
+        }
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -389,13 +418,17 @@
             .column-row {
                 grid-template-columns: 1fr;
             }
+            
+            .prerequisite-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏗️ Fabric Provisioner</h1>
+            <h1>🏗️ FabricForge</h1>
             <p>Create and configure your Microsoft Fabric Workspaces, Lakehouses and Warehouses</p>
         </div>
         
@@ -406,6 +439,46 @@
         </div>
         
         <div id="form-tab" class="content-section active">
+            <!-- Prerequisites Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🔐 Prerequisites</h2>
+                </div>
+                <div class="prerequisite-grid">
+                    <div class="form-group">
+                        <label class="form-label">Capacity ID</label>
+                        <input type="text" class="form-control" id="capacity-id" placeholder="Enter capacity ID" required>
+                        <span class="info-text">Your Microsoft Fabric capacity identifier</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">User ID</label>
+                        <input type="text" class="form-control" id="user-id" placeholder="Enter user ID" required>
+                        <span class="info-text">User principal name for authentication</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Client ID</label>
+                        <input type="text" class="form-control" id="client-id" placeholder="Enter client ID" required>
+                        <span class="info-text">Azure AD application (client) ID</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Client Secret</label>
+                        <input type="password" class="form-control" id="client-secret" placeholder="Enter client secret" required>
+                        <span class="info-text">Azure AD application secret value</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tenant ID</label>
+                        <input type="text" class="form-control" id="tenant-id" placeholder="Enter tenant ID" required>
+                        <span class="info-text">Azure AD tenant (directory) ID</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">N8N Webhook Trigger URL</label>
+                        <input type="url" class="form-control" id="webhook-url" placeholder="e.g., http://localhost:5678/webhook-test/xxxx-xxxx" required>
+                        <span class="info-text">The webhook endpoint for N8N automation</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Workspace Configuration Section -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">🏢 Workspace Configuration</h2>
@@ -468,7 +541,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Or paste JSON directly:</label>
-                    <textarea class="form-control" rows="10" id="json-input" placeholder='{"WorkspaceName": "", "Lakehouses": [], "Warehouses": []}'></textarea>
+                    <textarea class="form-control" rows="10" id="json-input" placeholder='{"Prerequisites": {"CapacityId": "", "UserId": "", "ClientId": "", "ClientSecret": "", "TenantId": "", "WebhookUrl": ""}, "WorkspaceName": "", "Lakehouses": [], "Warehouses": []}'></textarea>
                 </div>
                 <button class="btn btn-primary" onclick="importJSON()">
                     <span class="icon">📥</span> Import Configuration
@@ -494,6 +567,10 @@
                 </div>
             </div>
         </div>
+        
+        <div class="footer">
+            <p>An initiative by <a href="https://www.linkedin.com/in/khaledchowdhury/" target="_blank">Khaled Chowdhury</a> and <a href="https://www.linkedin.com/in/sulaimanahmed/" target="_blank">Sulaiman Ahmed</a></p>
+        </div>
     </div>
     <script>
         let lakehouseCount = 0;
@@ -501,6 +578,14 @@
         let tableCount = {};
         let columnCount = {};
         let configuration = {
+            Prerequisites: {
+                CapacityId: '',
+                UserId: '',
+                ClientId: '',
+                ClientSecret: '',
+                TenantId: '',
+                WebhookUrl: ''
+            },
             WorkspaceName: '',
             Lakehouses: [],
             Warehouses: []
@@ -754,6 +839,14 @@
         }
         
         function collectFormData() {
+            // Collect prerequisites
+            const capacityId = document.getElementById('capacity-id')?.value || '';
+            const userId = document.getElementById('user-id')?.value || '';
+            const clientId = document.getElementById('client-id')?.value || '';
+            const clientSecret = document.getElementById('client-secret')?.value || '';
+            const tenantId = document.getElementById('tenant-id')?.value || '';
+            const webhookUrl = document.getElementById('webhook-url')?.value || '';
+            
             const workspaceName = document.getElementById('workspace-name')?.value || '';
             const lakehouses = [];
             const warehouses = [];
@@ -813,7 +906,19 @@
                 }
             }
             
-            configuration = { WorkspaceName: workspaceName, Lakehouses: lakehouses, Warehouses: warehouses };
+            configuration = { 
+                Prerequisites: {
+                    CapacityId: capacityId,
+                    UserId: userId,
+                    ClientId: clientId,
+                    ClientSecret: clientSecret,
+                    TenantId: tenantId,
+                    WebhookUrl: webhookUrl
+                },
+                WorkspaceName: workspaceName, 
+                Lakehouses: lakehouses, 
+                Warehouses: warehouses 
+            };
             return configuration;
         }
         
@@ -837,6 +942,49 @@
         
         function submitForm() {
             const data = collectFormData();
+            
+            // Validate prerequisites
+            if (!data.Prerequisites.CapacityId.trim()) {
+                alert('Please enter a Capacity ID in the Prerequisites section.');
+                switchTab('form');
+                document.getElementById('capacity-id')?.focus();
+                return;
+            }
+            
+            if (!data.Prerequisites.UserId.trim()) {
+                alert('Please enter a User ID in the Prerequisites section.');
+                switchTab('form');
+                document.getElementById('user-id')?.focus();
+                return;
+            }
+            
+            if (!data.Prerequisites.ClientId.trim()) {
+                alert('Please enter a Client ID in the Prerequisites section.');
+                switchTab('form');
+                document.getElementById('client-id')?.focus();
+                return;
+            }
+            
+            if (!data.Prerequisites.ClientSecret.trim()) {
+                alert('Please enter a Client Secret in the Prerequisites section.');
+                switchTab('form');
+                document.getElementById('client-secret')?.focus();
+                return;
+            }
+            
+            if (!data.Prerequisites.TenantId.trim()) {
+                alert('Please enter a Tenant ID in the Prerequisites section.');
+                switchTab('form');
+                document.getElementById('tenant-id')?.focus();
+                return;
+            }
+            
+            if (!data.Prerequisites.WebhookUrl.trim()) {
+                alert('Please enter a Webhook URL in the Prerequisites section.');
+                switchTab('form');
+                document.getElementById('webhook-url')?.focus();
+                return;
+            }
             
             if (!data.WorkspaceName.trim()) {
                 alert('Please enter a workspace name before submitting.');
@@ -867,7 +1015,7 @@
                 }
             }
             
-            const webhookUrl = 'http://localhost:5678/webhook-test/fabric-provisioner';
+            const webhookUrl = data.Prerequisites.WebhookUrl;
             
             fetch(webhookUrl, {
                 method: 'POST',
@@ -940,20 +1088,38 @@
         }
         
         function importJSONData(data) {
+            // Clear existing form
             document.getElementById('lakehouses-container').innerHTML = '';
             checkEmptyState('lakehouses-container', 'lakehouses', 'Add Lakehouse');
             document.getElementById('warehouses-container').innerHTML = '';
             checkEmptyState('warehouses-container', 'warehouses', 'Add Warehouse');
-            const workspaceNameEl = document.getElementById('workspace-name');
-            if(workspaceNameEl) workspaceNameEl.value = '';
+            
+            // Clear all input fields
+            document.getElementById('capacity-id').value = '';
+            document.getElementById('user-id').value = '';
+            document.getElementById('client-id').value = '';
+            document.getElementById('client-secret').value = '';
+            document.getElementById('tenant-id').value = '';
+            document.getElementById('webhook-url').value = '';
+            document.getElementById('workspace-name').value = '';
             
             lakehouseCount = 0;
             warehouseCount = 0;
             tableCount = {};
             columnCount = {};
             
-            if (data.WorkspaceName && workspaceNameEl) {
-                workspaceNameEl.value = data.WorkspaceName;
+            // Import prerequisites if present
+            if (data.Prerequisites) {
+                if (data.Prerequisites.CapacityId) document.getElementById('capacity-id').value = data.Prerequisites.CapacityId;
+                if (data.Prerequisites.UserId) document.getElementById('user-id').value = data.Prerequisites.UserId;
+                if (data.Prerequisites.ClientId) document.getElementById('client-id').value = data.Prerequisites.ClientId;
+                if (data.Prerequisites.ClientSecret) document.getElementById('client-secret').value = data.Prerequisites.ClientSecret;
+                if (data.Prerequisites.TenantId) document.getElementById('tenant-id').value = data.Prerequisites.TenantId;
+                if (data.Prerequisites.WebhookUrl) document.getElementById('webhook-url').value = data.Prerequisites.WebhookUrl;
+            }
+            
+            if (data.WorkspaceName) {
+                document.getElementById('workspace-name').value = data.WorkspaceName;
             }
             
             if (data.Lakehouses && Array.isArray(data.Lakehouses)) {
