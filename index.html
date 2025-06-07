@@ -402,6 +402,70 @@
             color: #4a7c59;
             text-decoration: underline;
         }
+        .faq-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .faq-question {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #2d5a3d;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .faq-answer {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.7;
+        }
+        .faq-answer ul {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+        }
+        .faq-answer li {
+            margin-bottom: 0.5rem;
+        }
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(45, 90, 61, 0.2);
+            border: 1px solid rgba(45, 90, 61, 0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+        .workflow-step {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid #2d5a3d;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .workflow-step-number {
+            display: inline-block;
+            background: #2d5a3d;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            font-size: 0.875rem;
+        }
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -436,6 +500,7 @@
             <button class="tab active" onclick="switchTab('form')">Form Builder</button>
             <button class="tab" onclick="switchTab('json')">Import JSON</button>
             <button class="tab" onclick="switchTab('preview')">Preview & Submit</button>
+            <button class="tab" onclick="switchTab('faq')">FAQ</button>
         </div>
         
         <div id="form-tab" class="content-section active">
@@ -568,6 +633,167 @@
             </div>
         </div>
         
+        <div id="faq-tab" class="content-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">❓ Frequently Asked Questions</h2>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>🔒</span> Is my data secure? Do you store my credentials?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="security-badge">
+                            <span>🛡️</span> Your data is NOT stored anywhere
+                        </div>
+                        <p>FabricForge is a <strong>client-side web application</strong> that runs entirely in your browser. Here's what this means for your security:</p>
+                        <ul>
+                            <li><strong>No server storage:</strong> We don't have any backend servers storing your credentials</li>
+                            <li><strong>Direct transmission:</strong> Your data is sent directly from your browser to your specified N8N webhook URL</li>
+                            <li><strong>No intermediaries:</strong> There are no middle servers intercepting or logging your information</li>
+                            <li><strong>Browser-only:</strong> Once you close or refresh the page, all entered data is completely gone</li>
+                            <li><strong>Open workflow:</strong> The N8N workflow JSON is transparent - you can inspect exactly what happens with your data</li>
+                        </ul>
+                        <p>Your sensitive credentials (Client ID, Client Secret, Tenant ID) are only used by your own N8N instance to authenticate with Microsoft Fabric APIs.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>🔄</span> How does the N8N workflow process my configuration?
+                    </div>
+                    <div class="faq-answer">
+                        <p>The N8N workflow follows a systematic approach to provision your Fabric resources:</p>
+                        
+                        <div class="workflow-step">
+                            <span class="workflow-step-number">1</span>
+                            <strong>Webhook Trigger:</strong> Receives your configuration from FabricForge
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <span class="workflow-step-number">2</span>
+                            <strong>Process Configuration:</strong> Validates and structures your input data, removing duplicates
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <span class="workflow-step-number">3</span>
+                            <strong>Authentication:</strong> Uses your credentials to obtain an access token from Microsoft
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <span class="workflow-step-number">4</span>
+                            <strong>Workspace Management:</strong> Checks if workspace exists, creates if needed, and assigns to capacity
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <span class="workflow-step-number">5</span>
+                            <strong>Lakehouse Creation:</strong> Creates lakehouses sequentially with rate limiting protection
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <span class="workflow-step-number">6</span>
+                            <strong>Warehouse Creation:</strong> Provisions warehouses after lakehouses are complete
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <span class="workflow-step-number">7</span>
+                            <strong>Notebook Setup:</strong> Creates and configures notebooks with AI-generated PySpark code for tables
+                        </div>
+                        
+                        <div class="workflow-step">
+                            <span class="workflow-step-number">8</span>
+                            <strong>Table Creation:</strong> Executes notebooks to create Delta tables in lakehouses
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>🎯</span> What are the prerequisites needed?
+                    </div>
+                    <div class="faq-answer">
+                        <p>To use FabricForge, you need:</p>
+                        <ul>
+                            <li><strong>Microsoft Fabric Capacity:</strong> An active Fabric capacity (F2 or higher recommended)</li>
+                            <li><strong>Azure AD App Registration:</strong> Create an app registration in Azure Portal with Fabric API permissions</li>
+                            <li><strong>Client Credentials:</strong> Client ID and Client Secret from your app registration</li>
+                            <li><strong>Tenant Information:</strong> Your Azure AD Tenant ID</li>
+                            <li><strong>User ID:</strong> Email of a user with Fabric workspace creation permissions</li>
+                            <li><strong>N8N Instance:</strong> A running N8N instance with the workflow imported</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>⚡</span> What happens if resources already exist?
+                    </div>
+                    <div class="faq-answer">
+                        <p>The workflow intelligently handles existing resources:</p>
+                        <ul>
+                            <li><strong>Workspaces:</strong> If a workspace with the same name exists, it uses the existing one</li>
+                            <li><strong>Lakehouses:</strong> Skips creation if a lakehouse with the same name already exists</li>
+                            <li><strong>Warehouses:</strong> Similar check - won't create duplicates</li>
+                            <li><strong>Notebooks:</strong> Only creates notebooks that don't already exist</li>
+                        </ul>
+                        <p>This prevents errors and ensures idempotent operations - you can safely run the workflow multiple times.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>📊</span> How are tables created in Lakehouses?
+                    </div>
+                    <div class="faq-answer">
+                        <p>Table creation is automated through AI-powered code generation:</p>
+                        <ol>
+                            <li>Your table schema (columns and data types) is sent to OpenAI</li>
+                            <li>AI generates PySpark code to create Delta tables</li>
+                            <li>Code is embedded into Fabric notebooks</li>
+                            <li>Notebooks are automatically executed to create the tables</li>
+                            <li>Tables are saved in Delta format in your lakehouse</li>
+                        </ol>
+                        <p>The workflow maps SQL data types to appropriate Spark types automatically.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>🚨</span> What should I do if something goes wrong?
+                    </div>
+                    <div class="faq-answer">
+                        <p>If you encounter issues:</p>
+                        <ul>
+                            <li><strong>Check N8N logs:</strong> Open your N8N instance and check the workflow execution logs</li>
+                            <li><strong>Verify credentials:</strong> Ensure all prerequisites are correctly entered</li>
+                            <li><strong>API permissions:</strong> Confirm your Azure AD app has necessary Fabric permissions</li>
+                            <li><strong>Rate limits:</strong> The workflow includes delays, but you might hit API limits with large configurations</li>
+                            <li><strong>Partial completion:</strong> Check Fabric portal - some resources might have been created</li>
+                        </ul>
+                        <p>The workflow continues on errors, so partial provisioning is possible. You can safely re-run to complete remaining resources.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>💡</span> Can I modify the N8N workflow?
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! The workflow is completely customizable:</p>
+                        <ul>
+                            <li>Import the JSON into your N8N instance</li>
+                            <li>Modify nodes to fit your specific requirements</li>
+                            <li>Add additional steps or integrations</li>
+                            <li>Adjust rate limiting delays if needed</li>
+                            <li>Change the AI model or prompts for table generation</li>
+                        </ul>
+                        <p>Just ensure your webhook URL in FabricForge points to your modified workflow.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="footer">
             <p>An initiative by <a href="https://www.linkedin.com/in/khaledchowdhury/" target="_blank">Khaled Chowdhury</a> and <a href="https://www.linkedin.com/in/sulaimanahmed/" target="_blank">Sulaiman Ahmed</a></p>
         </div>
@@ -612,6 +838,9 @@
                 document.querySelector('.tab:nth-child(3)').classList.add('active');
                 document.getElementById('preview-tab').classList.add('active');
                 updatePreview();
+            } else if (tab === 'faq') {
+                document.querySelector('.tab:nth-child(4)').classList.add('active');
+                document.getElementById('faq-tab').classList.add('active');
             }
         }
         
