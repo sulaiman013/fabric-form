@@ -536,6 +536,11 @@
                         <span class="info-text">Azure AD tenant (directory) ID</span>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">OpenAI API Key</label>
+                        <input type="password" class="form-control" id="openai-api-key" placeholder="Enter OpenAI API key" required>
+                        <span class="info-text">API key for generating table creation code</span>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">N8N Webhook Trigger URL</label>
                         <input type="url" class="form-control" id="webhook-url" placeholder="e.g., http://localhost:5678/webhook-test/xxxx-xxxx" required>
                         <span class="info-text">The webhook endpoint for N8N automation</span>
@@ -606,7 +611,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Or paste JSON directly:</label>
-                    <textarea class="form-control" rows="10" id="json-input" placeholder='{"Prerequisites": {"CapacityId": "", "UserId": "", "ClientId": "", "ClientSecret": "", "TenantId": "", "WebhookUrl": ""}, "WorkspaceName": "", "Lakehouses": [], "Warehouses": []}'></textarea>
+                    <textarea class="form-control" rows="10" id="json-input" placeholder='{"Prerequisites": {"CapacityId": "", "UserId": "", "ClientId": "", "ClientSecret": "", "TenantId": "", "OpenAIApiKey": "", "WebhookUrl": ""}, "WorkspaceName": "", "Lakehouses": [], "Warehouses": []}'></textarea>
                 </div>
                 <button class="btn btn-primary" onclick="importJSON()">
                     <span class="icon">📥</span> Import Configuration
@@ -655,10 +660,9 @@
                             <li><strong>Browser-only:</strong> Once you close or refresh the page, all entered data is completely gone</li>
                             <li><strong>Open workflow:</strong> The N8N workflow JSON is transparent - you can inspect exactly what happens with your data</li>
                         </ul>
-                        <p>Your sensitive credentials (Client ID, Client Secret, Tenant ID) are only used by your own N8N instance to authenticate with Microsoft Fabric APIs.</p>
+                        <p>Your sensitive credentials (Client ID, Client Secret, Tenant ID, OpenAI API Key) are only used by your own N8N instance to authenticate with Microsoft Fabric APIs and generate code.</p>
                     </div>
                 </div>
-
                 <div class="faq-item">
                     <div class="faq-question">
                         <span>🔄</span> How does the N8N workflow process my configuration?
@@ -698,7 +702,7 @@
                         
                         <div class="workflow-step">
                             <span class="workflow-step-number">7</span>
-                            <strong>Notebook Setup:</strong> Creates and configures notebooks with AI-generated PySpark code for tables
+                            <strong>Notebook Setup:</strong> Creates and configures notebooks with AI-generated PySpark code for tables (uses OpenAI API)</li>
                         </div>
                         
                         <div class="workflow-step">
@@ -707,7 +711,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="faq-item">
                     <div class="faq-question">
                         <span>🎯</span> What are the prerequisites needed?
@@ -720,11 +723,11 @@
                             <li><strong>Client Credentials:</strong> Client ID and Client Secret from your app registration</li>
                             <li><strong>Tenant Information:</strong> Your Azure AD Tenant ID</li>
                             <li><strong>User ID:</strong> Unique identifier of a user with Fabric workspace creation permissions</li>
+                            <li><strong>OpenAI API Key:</strong> Required for generating PySpark code to create tables in lakehouses</li>
                             <li><strong>N8N Instance:</strong> A running N8N instance with the workflow imported</li>
                         </ul>
                     </div>
                 </div>
-
                 <div class="faq-item">
                     <div class="faq-question">
                         <span>⚡</span> What happens if resources already exist?
@@ -740,7 +743,6 @@
                         <p>This prevents errors and ensures idempotent operations - you can safely run the workflow multiple times.</p>
                     </div>
                 </div>
-
                 <div class="faq-item">
                     <div class="faq-question">
                         <span>📊</span> How are tables created in Lakehouses?
@@ -748,16 +750,15 @@
                     <div class="faq-answer">
                         <p>Table creation is automated through AI-powered code generation:</p>
                         <ol>
-                            <li>Your table schema (columns and data types) is sent to OpenAI</li>
+                            <li>Your table schema (columns and data types) is sent to OpenAI using your API key</li>
                             <li>AI generates PySpark code to create Delta tables</li>
                             <li>Code is embedded into Fabric notebooks</li>
                             <li>Notebooks are automatically executed to create the tables</li>
                             <li>Tables are saved in Delta format in your lakehouse</li>
                         </ol>
-                        <p>The workflow maps SQL data types to appropriate Spark types automatically.</p>
+                        <p>The workflow maps SQL data types to appropriate Spark types automatically. The OpenAI API key is required for this step.</p>
                     </div>
                 </div>
-
                 <div class="faq-item">
                     <div class="faq-question">
                         <span>🚨</span> What should I do if something goes wrong?
@@ -768,13 +769,13 @@
                             <li><strong>Check N8N logs:</strong> Open your N8N instance and check the workflow execution logs</li>
                             <li><strong>Verify credentials:</strong> Ensure all prerequisites are correctly entered</li>
                             <li><strong>API permissions:</strong> Confirm your Azure AD app has necessary Fabric permissions</li>
+                            <li><strong>OpenAI API key:</strong> Verify your OpenAI API key is valid and has sufficient credits</li>
                             <li><strong>Rate limits:</strong> The workflow includes delays, but you might hit API limits with large configurations</li>
                             <li><strong>Partial completion:</strong> Check Fabric portal - some resources might have been created</li>
                         </ul>
                         <p>The workflow continues on errors, so partial provisioning is possible. You can safely re-run to complete remaining resources.</p>
                     </div>
                 </div>
-
                 <div class="faq-item">
                     <div class="faq-question">
                         <span>💡</span> Can I modify the N8N workflow?
@@ -810,6 +811,7 @@
                 ClientId: '',
                 ClientSecret: '',
                 TenantId: '',
+                OpenAIApiKey: '',
                 WebhookUrl: ''
             },
             WorkspaceName: '',
@@ -985,7 +987,6 @@
         function removeTable(lakehouseId, tableId) {
             const tableElement = document.getElementById(`lakehouse-${lakehouseId}-table-${tableId}`);
             if (tableElement) tableElement.remove();
-
             const container = document.getElementById(`tables-container-${lakehouseId}`);
             if (container && container.children.length === 0) {
                 container.innerHTML = '<div class="empty-state" style="padding: 1.5rem;"><p style="font-size: 0.875rem;">No tables defined. Click "Add Table" to create one.</p></div>';
@@ -1074,6 +1075,7 @@
             const clientId = document.getElementById('client-id')?.value || '';
             const clientSecret = document.getElementById('client-secret')?.value || '';
             const tenantId = document.getElementById('tenant-id')?.value || '';
+            const openAIApiKey = document.getElementById('openai-api-key')?.value || '';
             const webhookUrl = document.getElementById('webhook-url')?.value || '';
             
             const workspaceName = document.getElementById('workspace-name')?.value || '';
@@ -1083,7 +1085,6 @@
             for (let i = 1; i <= lakehouseCount; i++) {
                 const lakehouseElement = document.getElementById(`lakehouse-${i}`);
                 if (!lakehouseElement) continue; 
-
                 const nameInput = document.getElementById(`lakehouse-name-${i}`);
                 if (nameInput && nameInput.value.trim()) {
                     const lakehouse = { name: nameInput.value.trim(), tables: [] };
@@ -1098,7 +1099,6 @@
                     for (let j = 1; j <= currentTableCount; j++) {
                         const tableElement = document.getElementById(`lakehouse-${i}-table-${j}`);
                         if (!tableElement) continue;
-
                         const tableNameInput = document.getElementById(`lakehouse-${i}-table-name-${j}`);
                         if (tableNameInput && tableNameInput.value.trim()) {
                             const table = { name: tableNameInput.value.trim(), columns: [] };
@@ -1107,7 +1107,6 @@
                             for (let k = 1; k <= currentColumnCount; k++) {
                                 const columnElement = document.getElementById(`lakehouse-${i}-table-${j}-column-${k}`);
                                 if (!columnElement) continue;
-
                                 const columnNameInput = document.getElementById(`lakehouse-${i}-table-${j}-column-name-${k}`);
                                 const columnTypeSelect = document.getElementById(`lakehouse-${i}-table-${j}-column-type-${k}`);
                                 
@@ -1128,7 +1127,6 @@
             for (let i = 1; i <= warehouseCount; i++) {
                 const warehouseElement = document.getElementById(`warehouse-${i}`);
                 if (!warehouseElement) continue;
-
                 const nameInput = document.getElementById(`warehouse-name-${i}`);
                 if (nameInput && nameInput.value.trim()) {
                     warehouses.push({ name: nameInput.value.trim() });
@@ -1142,6 +1140,7 @@
                     ClientId: clientId,
                     ClientSecret: clientSecret,
                     TenantId: tenantId,
+                    OpenAIApiKey: openAIApiKey,
                     WebhookUrl: webhookUrl
                 },
                 WorkspaceName: workspaceName, 
@@ -1205,6 +1204,13 @@
                 alert('Please enter a Tenant ID in the Prerequisites section.');
                 switchTab('form');
                 document.getElementById('tenant-id')?.focus();
+                return;
+            }
+            
+            if (!data.Prerequisites.OpenAIApiKey.trim()) {
+                alert('Please enter an OpenAI API Key in the Prerequisites section.');
+                switchTab('form');
+                document.getElementById('openai-api-key')?.focus();
                 return;
             }
             
@@ -1275,7 +1281,6 @@
             const file = event.target.files[0];
             const fileNameDisplay = document.getElementById('file-name');
             const jsonInputArea = document.getElementById('json-input');
-
             if (file) {
                 if(fileNameDisplay) fileNameDisplay.textContent = file.name;
                 const reader = new FileReader();
@@ -1307,7 +1312,6 @@
                 alert('JSON input is empty. Please paste JSON or upload a file.');
                 return;
             }
-
             try {
                 const data = JSON.parse(jsonText);
                 importJSONData(data);
@@ -1329,6 +1333,7 @@
             document.getElementById('client-id').value = '';
             document.getElementById('client-secret').value = '';
             document.getElementById('tenant-id').value = '';
+            document.getElementById('openai-api-key').value = '';
             document.getElementById('webhook-url').value = '';
             document.getElementById('workspace-name').value = '';
             
@@ -1344,6 +1349,7 @@
                 if (data.Prerequisites.ClientId) document.getElementById('client-id').value = data.Prerequisites.ClientId;
                 if (data.Prerequisites.ClientSecret) document.getElementById('client-secret').value = data.Prerequisites.ClientSecret;
                 if (data.Prerequisites.TenantId) document.getElementById('tenant-id').value = data.Prerequisites.TenantId;
+                if (data.Prerequisites.OpenAIApiKey) document.getElementById('openai-api-key').value = data.Prerequisites.OpenAIApiKey;
                 if (data.Prerequisites.WebhookUrl) document.getElementById('webhook-url').value = data.Prerequisites.WebhookUrl;
             }
             
@@ -1404,7 +1410,6 @@
             checkEmptyState('lakehouses-container', 'lakehouses', 'Add Lakehouse');
             checkEmptyState('warehouses-container', 'warehouses', 'Add Warehouse');
         });
-
     </script>
 </body>
 </html>
