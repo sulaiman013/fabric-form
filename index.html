@@ -813,8 +813,10 @@
         </div>
     </div>
     <script>
-        const n8nWorkflowJson = {
-    {
+        function downloadN8NWorkflow() {
+    // Paste your entire N8N workflow JSON here (replace the example below)
+    const n8nWorkflowJson = {
+        {
   "name": "Workspace Provisioning Workflow",
   "nodes": [
     {
@@ -2367,9 +2369,9 @@
   "id": "R8WuH2JPkSuIt9OY",
   "tags": []
 }
-};
-
-function downloadN8NWorkflow() {
+        }
+    };
+    
     try {
         const blob = new Blob([JSON.stringify(n8nWorkflowJson, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
