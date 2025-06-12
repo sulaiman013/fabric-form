@@ -77,7 +77,9 @@
             z-index: 1;
         }
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 3rem;
         }
         .header h1 {
@@ -471,6 +473,12 @@
                 padding: 1rem;
             }
             
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
             .actions {
                 flex-direction: column;
             }
@@ -492,8 +500,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏗️ FabricForge</h1>
-            <p>Create and configure your Microsoft Fabric Workspaces, Lakehouses and Warehouses</p>
+            <div>
+                <h1>🏗️ FabricForge</h1>
+                <p>Create and configure your Microsoft Fabric Workspaces, Lakehouses and Warehouses</p>
+            </div>
+            <div>
+                <a href="https://github.com/sulaiman013/fabric-form/raw/refs/heads/master/FabricForge%20N8N%20workflow-updated.json" class="btn btn-secondary" download>
+                    <span class="icon">📄</span> Download N8N Workflow
+                </a>
+            </div>
         </div>
         
         <div class="tabs">
@@ -504,7 +519,6 @@
         </div>
         
         <div id="form-tab" class="content-section active">
-            <!-- Prerequisites Section -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">🔐 Prerequisites</h2>
@@ -548,7 +562,6 @@
                 </div>
             </div>
             
-            <!-- Workspace Configuration Section -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">🏢 Workspace Configuration</h2>
